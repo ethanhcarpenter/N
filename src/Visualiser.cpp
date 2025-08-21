@@ -6,7 +6,7 @@
 
 
 #pragma region Visualiser-Setup
-Visualiser::Visualiser(std::shared_ptr<NetworkToVisualiserInterface> ni) :isSetup(false), isNNRunning(false) {
+Visualiser::Visualiser(std::shared_ptr<NetworkVisualiserInterface> ni) :isSetup(false), isNNRunning(false) {
 	targetMonitor = nullptr;
 	networkInterface.swap(ni);
 };
@@ -288,8 +288,8 @@ void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 
 	ImGui::TextColored(ImVec4(0.2f, 0.7f, 1.0f, 1.0f), "Epoch %d", networkInterface->getCurrentEpoch());
 
-	float inputProgress = static_cast<float>(networkInterface->getCurrentInput() ) / networkInterface->getTotalInputs();
-	ImGui::Text("Input: %d / %d", networkInterface->getCurrentInput()+1, networkInterface->getTotalInputs());
+	float inputProgress = static_cast<float>(networkInterface->getCurrentInput()) / networkInterface->getTotalInputs();
+	ImGui::Text("Input: %d / %d", networkInterface->getCurrentInput() + 1, networkInterface->getTotalInputs());
 	ImGui::ProgressBar(inputProgress, ImVec2(-1, 0), "");
 
 	ImGui::TextColored(ImVec4(0.2f, 0.7f, 1.0f, 1.0f), "LET: %.0f ms", networkInterface->getLastEpochTime());
@@ -330,18 +330,29 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 	if (isNNRunning) { ImGui::EndDisabled(); }
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+	networkInterface->getInputDataManager()->drawSpecifiedInputForm();
+
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	bool confirmInputs = drawButton(
 		ButtonStyle{
-			ImVec2((ImGui::GetContentRegionAvail()[0]), 50),
-			"Confirm",
+			ImVec2((ImGui::GetContentRegionAvail().x), 50),
+			"Initialise Setup",
 			ImVec4(0.2f, 0.8f, 0.2f, 1.0f),
 			ImVec4(0.3f, 0.9f, 0.3f, 1.0f),
 			ImVec4(0.1f, 0.7f, 0.1f, 1.0f),
-		});
+		},
+		ButtonStyle{
+			ImVec2((ImGui::GetContentRegionAvail().x), 50),
+			"Change Inputs",
+			ImVec4(0.2f, 0.5f, 0.9f, 1.0f),
+			ImVec4(0.3f, 0.6f, 1.0f, 1.0f), 
+			ImVec4(0.1f, 0.4f, 0.8f, 1.0f), 
+		}, isSetup);
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	drawButton(
 		ButtonStyle{
-			ImVec2((ImGui::GetContentRegionAvail()[0]), 50),
+			ImVec2((ImGui::GetContentRegionAvail().x), 50),
 			"Reset",
 			ImVec4(0.9f, 0.5f, 0.1f, 1.0f),
 			ImVec4(1.0f, 0.6f, 0.2f, 1.0f),
@@ -350,21 +361,21 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	bool startTrainingPressed = drawButton(
 		ButtonStyle{
-			ImVec2(ImGui::GetContentRegionAvail()[0], 50),
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
 			"Start Training",
 			ImVec4(0.8f, 0.2f, 0.2f, 1.0f),
 			ImVec4(0.9f, 0.3f, 0.3f, 1.0f),
 			ImVec4(0.7f, 0.1f, 0.1f, 1.0f),
 		},
 		ButtonStyle{
-			ImVec2(ImGui::GetContentRegionAvail()[0], 50),
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
 			"Stop Training",
 			ImVec4(0.2f, 0.8f, 0.2f, 1.0f),
 			ImVec4(0.3f, 0.9f, 0.3f, 1.0f),
 			ImVec4(0.1f, 0.7f, 0.1f, 1.0f),
 		}, running);
 
-	if (confirmInputs) { 
+	if (confirmInputs) {
 		networkInterface->updateStats(layerArch, numericInputs, activation, confirmedLayerSizes);
 		layers = layerArch;
 		if (!confirmedLayerSizes) {
@@ -406,13 +417,13 @@ std::vector<int> Visualiser::drawLayerInputs() {
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
 	ImGui::InputInt("Number of Layers", &numLayers);
 	if (numLayers < 2) numLayers = 2;
-	if (numLayers > 16) numLayers = 63;
+	if (numLayers > 63) numLayers = 63;
 	ImGui::PopStyleColor(2);
 
 	static std::vector<int> layers = { 49, 32,64, 10 };
 	if (layers.size() != numLayers) { layers.resize(numLayers, 1); }
 
-	float baseLayerHeight = 30.0f;
+	float baseLayerHeight = 32.0f;
 	float maxChildHeight = 300.0f;
 	float childHeight = std::min(baseLayerHeight * numLayers + 40.0f, maxChildHeight);
 
@@ -480,10 +491,10 @@ void Visualiser::mainLoop() {
 		ImGui::SetNextWindowSize(ImVec2((float)winWidth, (float)winHeight));
 		if (ImGui::Begin("Main Tabs", nullptr, windowFlags | ImGuiWindowFlags_NoBackground)) {
 			if (ImGui::BeginTabBar("Tabs")) {
-				if (ImGui::BeginTabItem("Starting Tab")) {
+				/*if (ImGui::BeginTabItem("Starting Tab")) {
 					tabShowingIndex = 0;
 					ImGui::EndTabItem();
-				}
+				}*/
 				if (ImGui::BeginTabItem("Console")) {
 					tabShowingIndex = 1;
 					drawConsole(winWidth, winHeight);

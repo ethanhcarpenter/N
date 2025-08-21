@@ -8,6 +8,7 @@
 #include "StopWatch.h"
 #include "NeuralNetwork.h"
 #include "Visualiser.h"
+#include "InputDataManager.h"
 
 
 
@@ -30,12 +31,15 @@ private:
 	std::atomic<bool> isVisualiserSetup{ false };
 	std::atomic <std::shared_ptr<Visualiser>> visualiser;
 	std::atomic <std::shared_ptr<NeuralNetwork>> mainNeuralNetwork;
+	std::atomic <std::shared_ptr<InputDataManager>> inputDataManager;
 public:
 	Statistics();
 	std::shared_ptr<NeuralNetwork> getMainNeuralNetwork();
 	void setMainNeuralNetwork(std::shared_ptr<NeuralNetwork> v);
 	std::shared_ptr<Visualiser> getVisualiser();
 	void setVisualiser(std::shared_ptr<Visualiser> v);
+	std::shared_ptr<InputDataManager> getInputDataManager();
+	void setInputDataManager(std::shared_ptr<InputDataManager> m);
 	bool getIsVisualiserSetup();
 	void setIsVisualiserSetup(bool s);
 	int getInput();

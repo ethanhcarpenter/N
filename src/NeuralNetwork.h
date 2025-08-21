@@ -11,7 +11,7 @@
 #include "DataSet.h"
 #include "Activations.h"
 #include "StopWatch.h"
-//#include "NetworkToVisualiserInterface.h"
+
 
 
 
@@ -48,13 +48,13 @@ public:
 	int getSize();
 };
 
-class NetworkToVisualiserInterface;
+class NetworkVisualiserInterface;
+
 
 class NeuralNetwork {
-	//std::atomic <std::shared_ptr<Visualiser>*> visualiser;
-	std::shared_ptr<NetworkToVisualiserInterface> visualiserInterface;
-	//std::atomic <std::shared_ptr<Statistics>*> stats;
-	//std::atomic<std::shared_ptr<std::shared_mutex>*> statsMutex;
+
+	std::shared_ptr<NetworkVisualiserInterface> visualiserInterface;
+
 	std::vector<Layer> layers;
 	std::vector<int> layerSizes;
 	std::vector<std::vector<std::vector<float>>> weights;
@@ -65,7 +65,7 @@ class NeuralNetwork {
 
 public:
 	NeuralNetwork();
-	void setup(std::shared_ptr<NetworkToVisualiserInterface> vi);
+	void setup(std::shared_ptr<NetworkVisualiserInterface> vi);
 	void initWeights();
 	void feedforward(std::vector<float>& inputVals, bool firstpass = false, bool updateWeights = false);
 	void backpropagate(std::vector<float>& targetVals);

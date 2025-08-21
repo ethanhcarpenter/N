@@ -73,6 +73,9 @@ std::shared_ptr<Visualiser> Statistics::getVisualiser() {
 std::shared_ptr<NeuralNetwork> Statistics::getMainNeuralNetwork() {
 	return mainNeuralNetwork.load();
 }
+std::shared_ptr<InputDataManager> Statistics::getInputDataManager() {
+	return inputDataManager.load();
+}
 #pragma endregion
 
 
@@ -137,6 +140,10 @@ void Statistics::setMainNeuralNetwork(std::shared_ptr<NeuralNetwork> n) {
 void Statistics::setVisualiser(std::shared_ptr<Visualiser> v) {
 	std::lock_guard<std::mutex> lock(mtx);
 	visualiser.store(v);
+}
+void Statistics::setInputDataManager(std::shared_ptr<InputDataManager> m) {
+	std::lock_guard<std::mutex> lock(mtx);
+	inputDataManager.store(m);
 }
 #pragma endregion
 

@@ -14,6 +14,7 @@
 
 
 #include "NetworkToVisualiserInterface.h"
+#include "InputDataManager.h"
 #include "Visualiser.h"
 #include "NeuralNetwork.h"
 #include "DataSet.h"
@@ -25,11 +26,13 @@
 
 
 int main() {
-	std::shared_ptr<NetworkToVisualiserInterface> face=std::make_shared<NetworkToVisualiserInterface>();
+	std::shared_ptr<NetworkVisualiserInterface> face = std::make_shared<NetworkVisualiserInterface>();
+	std::shared_ptr<InputDataManager> manager=std::make_shared<InputDataManager>();
 	std::shared_ptr<NeuralNetwork> n = std::make_shared<NeuralNetwork>();
 	std::shared_ptr<Visualiser> v=std::make_shared<Visualiser>(face);
 	face->setMainNeuralNetwork(n);
 	face->setVisualiser(v);
+	face->setInputDataManager(manager);
 
 	n->setup(face);
 	DataSet data = { 49 };

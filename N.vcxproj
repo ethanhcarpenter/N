@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -95,7 +95,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -131,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="libs\stb\stb_image.h" />
+    <ClInclude Include="src\InputDataManager.h" />
     <ClInclude Include="libs\glfw3\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\glfw3\include\GLFW\glfw3native.h" />
     <ClInclude Include="libs\imgui\imconfig.h" />
@@ -165,6 +167,7 @@
     <ClInclude Include="src\VisualUpdate.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\InputDataManager.cpp" />
     <ClCompile Include="libs\imgui\imgui.cpp" />
     <ClCompile Include="libs\imgui\imgui_demo.cpp" />
     <ClCompile Include="libs\imgui\imgui_draw.cpp" />
@@ -185,6 +188,43 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="libs\fonts\vs.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\images\0_1414.png" />
+    <Image Include="data\images\0_2828.png" />
+    <Image Include="data\images\0_77.png" />
+    <Image Include="data\images\1_1414.png" />
+    <Image Include="data\images\1_2828.png" />
+    <Image Include="data\images\1_77.png" />
+    <Image Include="data\images\2_1414.png" />
+    <Image Include="data\images\2_2828.png" />
+    <Image Include="data\images\2_77.png" />
+    <Image Include="data\images\3_1414.png" />
+    <Image Include="data\images\3_2828.png" />
+    <Image Include="data\images\3_77.png" />
+    <Image Include="data\images\4_1414.png" />
+    <Image Include="data\images\4_2828.png" />
+    <Image Include="data\images\4_77.png" />
+    <Image Include="data\images\5_1414.png" />
+    <Image Include="data\images\5_2828.png" />
+    <Image Include="data\images\5_77.png" />
+    <Image Include="data\images\6_1414.png" />
+    <Image Include="data\images\6_2828.png" />
+    <Image Include="data\images\6_77.png" />
+    <Image Include="data\images\7_1414.png" />
+    <Image Include="data\images\7_2828.png" />
+    <Image Include="data\images\7_77.png" />
+    <Image Include="data\images\8_1414.png" />
+    <Image Include="data\images\8_2828.png" />
+    <Image Include="data\images\8_77.png" />
+    <Image Include="data\images\9_1414.png" />
+    <Image Include="data\images\9_2828.png" />
+    <Image Include="data\images\9_77.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\data1414.txt" />
+    <Text Include="data\data2828.txt" />
+    <Text Include="data\data77.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

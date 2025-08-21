@@ -25,6 +25,12 @@
     <Filter Include="Run Files">
       <UniqueIdentifier>{b6448fc7-070d-471b-8b73-4aaa7c4f4518}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\stb">
+      <UniqueIdentifier>{c5f4c5c5-2fd6-4c3a-b227-1272458a2c32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Images">
+      <UniqueIdentifier>{d170d2b4-6b30-497e-bfeb-931de48da900}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\NeuralNetwork.h">
@@ -87,6 +93,12 @@
     <ClInclude Include="libs\glfw3\include\GLFW\glfw3native.h">
       <Filter>Header Files\glfw</Filter>
     </ClInclude>
+    <ClInclude Include="src\InputDataManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\stb\stb_image.h">
+      <Filter>Header Files\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\NeuralNetwork.cpp">
@@ -138,10 +150,116 @@
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\InputDataManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Font Include="libs\fonts\vs.ttf">
       <Filter>Resource Files</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\images\0_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\0_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\0_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\1_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\1_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\1_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\2_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\2_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\2_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\3_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\3_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\3_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\4_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\4_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\4_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\5_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\5_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\5_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\6_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\6_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\6_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\7_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\7_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\7_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\8_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\8_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\8_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\9_77.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\9_1414.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\9_2828.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\data77.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\data1414.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\data2828.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

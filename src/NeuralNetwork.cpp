@@ -63,7 +63,7 @@ int Layer::getSize() { return nodes.size(); }
 
 #pragma region NeuralNetwork-Setup
 NeuralNetwork::NeuralNetwork() {}
-void NeuralNetwork::setup(std::shared_ptr<NetworkToVisualiserInterface> vi) {
+void NeuralNetwork::setup(std::shared_ptr<NetworkVisualiserInterface> vi) {
 	visualiserInterface.swap(vi);
 	maxEpochs = 0;
 	visualiserInterface->initialiseVisualiseThread();

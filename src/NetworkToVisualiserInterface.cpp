@@ -1,16 +1,16 @@
 #include "NetworkToVisualiserInterface.h"
 
-NetworkToVisualiserInterface::NetworkToVisualiserInterface() {
+NetworkVisualiserInterface::NetworkVisualiserInterface() {
 	statsMutex.store(new std::shared_ptr<std::shared_mutex>(std::make_shared<std::shared_mutex>()));
 	stats.store(new std::shared_ptr<Statistics>(std::make_shared<Statistics>()));
 
 }
-bool NetworkToVisualiserInterface::isVisualiserSetup() {
+bool NetworkVisualiserInterface::isVisualiserSetup() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getIsVisualiserSetup();
 }
 
-std::tuple<std::string, float, std::vector<int>> NetworkToVisualiserInterface::getInitialInputs() {
+std::tuple<std::string, float, std::vector<int>> NetworkVisualiserInterface::getInitialInputs() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return std::make_tuple(
 		stats.load()->get()->getActivationType(),
@@ -19,15 +19,15 @@ std::tuple<std::string, float, std::vector<int>> NetworkToVisualiserInterface::g
 	);
 }
 
-void NetworkToVisualiserInterface::initialiseWorkerThread() {
+void NetworkVisualiserInterface::initialiseWorkerThread() {
 	threader.getSideVisualiserThread() = std::thread(&Threader::visualiserWorker, &threader);
 }
 
-void NetworkToVisualiserInterface::joinAllThreads() {
+void NetworkVisualiserInterface::joinAllThreads() {
 	threader.joinAllThreads();
 }
 
-void NetworkToVisualiserInterface::updateConnections(std::vector<VisualUpdate> updates, bool firstPass) {
+void NetworkVisualiserInterface::updateConnections(std::vector<VisualUpdate> updates, bool firstPass) {
 	std::unique_lock<std::mutex> threadLock(threader.getQueueMutex());
 	std::shared_lock<std::shared_mutex> statsLock(*statsMutex.load()->get());
 	if (threader.getQueue().size() != 0) { return; }
@@ -47,7 +47,7 @@ void NetworkToVisualiserInterface::updateConnections(std::vector<VisualUpdate> u
 	threader.getCV().notify_one();
 }
 
-void NetworkToVisualiserInterface::initialiseVisualiseThread() {
+void NetworkVisualiserInterface::initialiseVisualiseThread() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	threader.getMainVisualiserThread() = std::thread([&, this, visualiser = stats.load()->get()->getVisualiser()] {
 		visualiser->setup("Neural Network", 0);
@@ -55,7 +55,7 @@ void NetworkToVisualiserInterface::initialiseVisualiseThread() {
 		});
 }
 
-std::tuple<std::string,float,int> NetworkToVisualiserInterface::getParametersFromVisualiser() {
+std::tuple<std::string,float,int> NetworkVisualiserInterface::getParametersFromVisualiser() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return std::make_tuple(
 		stats.load()->get()->getActivationType(),
@@ -64,7 +64,7 @@ std::tuple<std::string,float,int> NetworkToVisualiserInterface::getParametersFro
 	);
 }
 
-int NetworkToVisualiserInterface::startTraining(int inputSize) {
+int NetworkVisualiserInterface::startTraining(int inputSize) {
 	int maxEpochs = 0;
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
@@ -74,12 +74,12 @@ int NetworkToVisualiserInterface::startTraining(int inputSize) {
 	return maxEpochs;
 }
 
-bool NetworkToVisualiserInterface::isNeuralNetworkRunning() {
+bool NetworkVisualiserInterface::isNeuralNetworkRunning() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getRunning();
 }
 
-void NetworkToVisualiserInterface::updateNeuralNetworkParametersFromVisualiser(std::function<void()> updateParameters) {
+void NetworkVisualiserInterface::updateNeuralNetworkParametersFromVisualiser(std::function<void()> updateParameters) {
 	if (auto mtxPtr = statsMutex.load()) {
 		std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 		if (stats.load()->get()->getNeuralNetworkNeedsUpdating()) {
@@ -90,21 +90,21 @@ void NetworkToVisualiserInterface::updateNeuralNetworkParametersFromVisualiser(s
 	}
 }
 
-void NetworkToVisualiserInterface::updateInputStatistic() {
+void NetworkVisualiserInterface::updateInputStatistic() {
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
 		stats.load()->get()->nextInput();
 	}
 }
 
-void NetworkToVisualiserInterface::updateWeightStatistic(std::vector<std::vector<std::vector<float>>> weights) {
+void NetworkVisualiserInterface::updateWeightStatistic(std::vector<std::vector<std::vector<float>>> weights) {
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
 		stats.load()->get()->setWeights(weights);
 	}
 }
 
-void NetworkToVisualiserInterface::updateEpochStatistic(StopWatch& stopwatch) {
+void NetworkVisualiserInterface::updateEpochStatistic(StopWatch& stopwatch) {
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
 		stats.load()->get()->nextEpoch(stopwatch);
@@ -112,46 +112,48 @@ void NetworkToVisualiserInterface::updateEpochStatistic(StopWatch& stopwatch) {
 	}
 }
 
-void NetworkToVisualiserInterface::updateAccuracyStatistic(float accuracy) {
+void NetworkVisualiserInterface::updateAccuracyStatistic(float accuracy) {
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
 		stats.load()->get()->setTestAccuracy(accuracy);
 	}
 }
 
-
-int NetworkToVisualiserInterface::getCurrentInput() {
+std::shared_ptr<InputDataManager> NetworkVisualiserInterface::getInputDataManager() {
+	return stats.load()->get()->getInputDataManager();
+}
+int NetworkVisualiserInterface::getCurrentInput() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getInput();
 }
-int NetworkToVisualiserInterface::getCurrentEpoch() {
+int NetworkVisualiserInterface::getCurrentEpoch() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getEpoch();
 }
-int NetworkToVisualiserInterface::getTotalInputs() {
+int NetworkVisualiserInterface::getTotalInputs() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getTotalInputs();
 }
-float NetworkToVisualiserInterface::getLastEpochTime() {
+float NetworkVisualiserInterface::getLastEpochTime() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getLastEpochTime();
 }
-float NetworkToVisualiserInterface::getAverageEpochTime() {
+float NetworkVisualiserInterface::getAverageEpochTime() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getAverageEpochTime();
 }
-float NetworkToVisualiserInterface::getTestAccuracy() {
+float NetworkVisualiserInterface::getTestAccuracy() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getTestAccuracy();
 }
 
-void NetworkToVisualiserInterface::invertNeuralNetworkRunning() {
+void NetworkVisualiserInterface::invertNeuralNetworkRunning() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	stats.load()->get()->setRunning(!isNeuralNetworkRunning());
 }
 
 
-void NetworkToVisualiserInterface::updateStats( std::vector<int> ls, std::tuple<int, float> ni, std::string at,bool cls) {
+void NetworkVisualiserInterface::updateStats( std::vector<int> ls, std::tuple<int, float> ni, std::string at,bool cls) {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	auto& s = *stats.load()->get();
 	s.setLayerSizes(ls);
@@ -162,12 +164,17 @@ void NetworkToVisualiserInterface::updateStats( std::vector<int> ls, std::tuple<
 	if(cls) { s.setNeuralNetworkNeedsUpdating(true); }
 }
 
-void NetworkToVisualiserInterface::setMainNeuralNetwork(std::shared_ptr<NeuralNetwork> n) {
+void NetworkVisualiserInterface::setMainNeuralNetwork(std::shared_ptr<NeuralNetwork> n) {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	stats.load()->get()->setMainNeuralNetwork(n);
 
 }
-void NetworkToVisualiserInterface::setVisualiser(std::shared_ptr<Visualiser> v) {
+void NetworkVisualiserInterface::setVisualiser(std::shared_ptr<Visualiser> v) {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	stats.load()->get()->setVisualiser(v);
+}
+
+void NetworkVisualiserInterface::setInputDataManager(std::shared_ptr<InputDataManager> m) {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	stats.load()->get()->setInputDataManager(m);
 }

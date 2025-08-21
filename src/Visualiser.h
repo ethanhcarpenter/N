@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
 #include <atomic>
 #include <string>
 #include <memory>
@@ -14,7 +15,8 @@
 
 constexpr float M_PI = 3.14159265358979323846;
 
-class NetworkToVisualiserInterface;
+class NetworkVisualiserInterface;
+
 
 class Connection {
 private:
@@ -40,7 +42,8 @@ struct ButtonStyle {
 
 class Visualiser {
 private:
-	std::shared_ptr<NetworkToVisualiserInterface> networkInterface;
+	std::shared_ptr<NetworkVisualiserInterface> networkInterface;
+
 	GLFWmonitor* targetMonitor;
 	const GLFWvidmode* mode;
 	GLFWwindow* window;
@@ -63,7 +66,7 @@ private:
 	ImFont* fontLarge;
 	bool confirmedLayerSizes;
 public:
-	Visualiser(std::shared_ptr<NetworkToVisualiserInterface> ni);
+	Visualiser(std::shared_ptr<NetworkVisualiserInterface> ni);
 	void setup(const char* name, int targetMonitorIndex, int windowWidth = -1, int windowHeight = -1);
 	int getTabContentHeight();
 	void generateNeuronPositions(const std::vector<int>& layers, float width, float height);
@@ -89,7 +92,7 @@ public:
 	std::string drawActivationInput();
 	bool drawButton(ButtonStyle defaultStyle, ButtonStyle constantPressedStyle = {}, bool lock = false);
 	void calculateConnectionCount();
-	void updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at);
+	void updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at, bool cls);
 	void postSetupLogic();
 	void drawImGuiBriefNNStats(int winWidth, int winHeight);
 };
