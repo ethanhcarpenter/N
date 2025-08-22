@@ -54,7 +54,7 @@ void NetworkVisualiserInterface::createData(int trainAmount, int testAmount) {
 	std::unique_lock<std::mutex> threadLock(threader.getQueueMutex());
 	std::shared_lock<std::shared_mutex> statsLock(*statsMutex.load()->get());
 	if (threader.getQueue().size() != 0) { return; }
-	threader.getQueue().emplace([this,trainAmount,testAmount]() {
+	threader.getQueue().emplace([this, trainAmount, testAmount]() {
 		getInputDataManager()->createData(trainAmount, testAmount);
 		});
 
@@ -69,7 +69,7 @@ void NetworkVisualiserInterface::initialiseVisualiseThread() {
 		});
 }
 
-std::tuple<std::string,float,int> NetworkVisualiserInterface::getParametersFromVisualiser() {
+std::tuple<std::string, float, int> NetworkVisualiserInterface::getParametersFromVisualiser() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return std::make_tuple(
 		stats.load()->get()->getActivationType(),
@@ -100,7 +100,7 @@ void NetworkVisualiserInterface::updateNeuralNetworkParametersFromVisualiser(std
 			updateParameters();
 			stats.load()->get()->setNeuralNetworkNeedsUpdating(false);
 		}
-		
+
 	}
 }
 
@@ -167,7 +167,7 @@ void NetworkVisualiserInterface::invertNeuralNetworkRunning() {
 }
 
 
-void NetworkVisualiserInterface::updateStats( std::vector<int> ls, std::tuple<int, float> ni, std::string at,bool cls) {
+void NetworkVisualiserInterface::updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at, bool cls) {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	auto& s = *stats.load()->get();
 	s.setLayerSizes(ls);
@@ -175,7 +175,7 @@ void NetworkVisualiserInterface::updateStats( std::vector<int> ls, std::tuple<in
 	s.setLearningRate(get<1>(ni));
 	s.setActivationType(at);
 	if (!cls) { s.setIsVisualiserSetup(true); }
-	if(cls) { s.setNeuralNetworkNeedsUpdating(true); }
+	if (cls) { s.setNeuralNetworkNeedsUpdating(true); }
 }
 
 void NetworkVisualiserInterface::setMainNeuralNetwork(std::shared_ptr<NeuralNetwork> n) {

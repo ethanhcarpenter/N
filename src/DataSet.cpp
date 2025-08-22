@@ -7,7 +7,7 @@ void DataSet::setNumberOfInputs(int noi) {
 }
 
 void DataSet::generateImageDataFromTextFile(const char* path, int amount) {
-	std::srand(std::time(0));
+	std::srand(static_cast<int>(std::time(0)));
 	inputs.clear();
 	outputs.clear();
 	std::ifstream file(path);
@@ -31,7 +31,7 @@ void DataSet::generateImageDataFromTextFile(const char* path, int amount) {
 	file.close();
 }
 void DataSet::generateImageDataFromTextFileRandom(const char* path, int amount) {
-	srand(time(0));
+	std::srand(static_cast<int>(std::time(0)));
 	inputs.clear();
 	outputs.clear();
 	std::ifstream file(path, std::ios::binary);
@@ -41,7 +41,7 @@ void DataSet::generateImageDataFromTextFileRandom(const char* path, int amount) 
 	while (std::getline(file, line)) {
 		offsets.push_back(file.tellg());
 	}
-	if (amount > (int)offsets.size() - 1) amount = offsets.size() - 1;
+	if (amount > (int)offsets.size() - 1) amount = static_cast<int>(offsets.size()) - 1;
 	std::vector<int> indices(offsets.size() - 1);
 	for (int i = 0; i < (int)indices.size(); ++i) indices[i] = i;
 	std::random_device rd;

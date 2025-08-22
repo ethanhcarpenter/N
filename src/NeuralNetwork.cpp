@@ -54,7 +54,7 @@ Layer::Layer(int size, NodeType type) {
 
 #pragma region Get
 std::vector<Node>& Layer::getNodes() { return nodes; }
-int Layer::getSize() { return nodes.size(); }
+int Layer::getSize() { return static_cast<int>(nodes.size()); }
 #pragma endregion
 
 #pragma endregion
@@ -67,7 +67,7 @@ void NeuralNetwork::setup(std::shared_ptr<NetworkVisualiserInterface> vi) {
 	visualiserInterface.swap(vi);
 	maxEpochs = 0;
 	visualiserInterface->initialiseVisualiseThread();
-	while (!visualiserInterface->isVisualiserSetup()==1);
+	while (!visualiserInterface->isVisualiserSetup() == 1);
 	auto initialInputs = visualiserInterface->getInitialInputs();
 
 	activationType = std::get<0>(initialInputs);
@@ -149,7 +149,7 @@ void NeuralNetwork::backpropagate(std::vector<float>& targetVals) {
 	std::vector<std::vector<float>> deltas(layers.size());
 
 	auto& output = layers.back().getNodes();
-	const int outputSize = output.size();
+	const int outputSize = static_cast<int>(output.size());
 	deltas.back().resize(outputSize);
 	for (int i = 0; i < outputSize; ++i) {
 		float outVal = output[i].getValue();
@@ -157,11 +157,11 @@ void NeuralNetwork::backpropagate(std::vector<float>& targetVals) {
 		deltas.back()[i] = error * Activations::derive(activationType, outVal);
 	}
 
-	for (int l = layers.size() - 2; l > 0; --l) {
+	for (int l = static_cast<int>(layers.size()) - 2; l > 0; --l) {
 		auto& curr = layers[l].getNodes();
 		auto& next = layers[l + 1].getNodes();
-		const int currSize = curr.size();
-		const int nextSize = next.size();
+		const int currSize = static_cast<int>(curr.size());
+		const int nextSize = static_cast<int>(next.size());
 		deltas[l].resize(currSize);
 
 		for (int i = 0; i < currSize; ++i) {
@@ -175,8 +175,8 @@ void NeuralNetwork::backpropagate(std::vector<float>& targetVals) {
 	for (size_t l = 0; l < weights.size(); ++l) {
 		auto& from = layers[l].getNodes();
 		auto& to = layers[l + 1].getNodes();
-		const int fromSize = from.size();
-		const int toSize = to.size();
+		const int fromSize = static_cast<int>(from.size());
+		const int toSize = static_cast<int>(to.size());
 
 		for (int i = 0; i < fromSize; ++i) {
 			for (int j = 0; j < toSize; ++j) {
@@ -213,7 +213,7 @@ void NeuralNetwork::train() {
 	auto& inputs = visualiserInterface->getInputDataManager()->getTrainingInputs();
 	auto& expectedOutputs = visualiserInterface->getInputDataManager()->getTrainingOutputs();
 
-	int inputSize = inputs.size();
+	int inputSize = static_cast<int>(inputs.size());
 	maxEpochs = visualiserInterface->startTraining(inputSize);
 	stopwatch.start();
 

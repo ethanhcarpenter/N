@@ -13,7 +13,7 @@
 
 
 
-constexpr float M_PI = 3.14159265358979323846;
+constexpr float M_PI = 3.14159265358979323846f;
 
 class NetworkVisualiserInterface;
 
@@ -70,7 +70,7 @@ public:
 	Visualiser(std::shared_ptr<NetworkVisualiserInterface> ni);
 	void setup(const char* name, int targetMonitorIndex, int windowWidth = -1, int windowHeight = -1);
 	int getTabContentHeight();
-	void generateNeuronPositions(const std::vector<int>& layers, float width, float height);
+	void generateNeuronPositions();
 	void drawCircle(float cx, float cy, float r, int num_segments);
 	const float calculateNeuronRadius(float height, float margin);
 	void drawNeurons();

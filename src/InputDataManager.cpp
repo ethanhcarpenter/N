@@ -30,7 +30,7 @@ GLuint InputDataManager::loadTexture(std::string filename) {
 }
 
 InputDataManager::InputDataManager(std::vector<std::string> iq, std::string imF) {
-	numberOfSampleImages = iq.size();
+	numberOfSampleImages = static_cast<int>(iq.size());
 	currentlyHighlighted = iq[0];
 	imageQuailities = iq;
 	isDataCreated = false;
@@ -62,9 +62,9 @@ void InputDataManager::drawSpecifiedInputForm() {
 	const char* inputs[] = { "Images" };
 	ImGui::Combo("Type", &inputType, inputs, IM_ARRAYSIZE(inputs));
 	type = inputs[inputType];
-	if (type=="Images") { 
+	if (type == "Images") {
 		drawImages();
-		inputAmount = std::pow(std::stoi(getHalfString(currentlyHighlighted)), 2);
+		inputAmount = static_cast<int>(std::powf(static_cast<float>(std::stoi(getHalfString(currentlyHighlighted))), 2.0f));
 		outputAmount = 10;
 	}
 
@@ -93,7 +93,7 @@ void InputDataManager::drawImages() {
 	float textHeight = ImGui::GetTextLineHeight();
 	ImVec2 childSize(maxImageWidth, imageHeight + textHeight + spacing);
 	createSampleImageTextures();
-	
+
 	for (auto& quality : imageQuailities) {
 		ImGui::BeginChild(("SampleImage" + quality).c_str(), childSize, false);
 
@@ -102,7 +102,7 @@ void InputDataManager::drawImages() {
 
 		ImGui::Image((ImTextureID)(intptr_t)currentImage, imageSize);
 		std::string sizeString = getHalfString(quality);
-		TextCentered(getHalfString(sizeString+"x"+sizeString));
+		TextCentered(getHalfString(sizeString + "x" + sizeString));
 
 
 		if (quality == currentlyHighlighted) {
@@ -113,8 +113,8 @@ void InputDataManager::drawImages() {
 				ImVec2(pos.x + half, pos.y + half),
 				ImVec2(pos.x + imageSize.x - half, pos.y + imageSize.y - half),
 				IM_COL32(128, 0, 128, 255),
-				0.0f,  
-				0,     
+				0.0f,
+				0,
 				thickness
 			);
 		}
@@ -136,7 +136,7 @@ void InputDataManager::drawImages() {
 
 std::string InputDataManager::getHalfString(std::string s) {
 	size_t mid = s.size() / 2;
-	return s.substr(0,mid);
+	return s.substr(0, mid);
 }
 
 void InputDataManager::TextCentered(std::string text) {
@@ -146,9 +146,9 @@ void InputDataManager::TextCentered(std::string text) {
 	ImGui::Text("%s", text.c_str());
 }
 
-void InputDataManager::createData(int trainAmount,int testAmount) {
-	if(type=="Images"){
-		inputAmount = std::pow(std::stoi(getHalfString(currentlyHighlighted)),2);
+void InputDataManager::createData(int trainAmount, int testAmount) {
+	if (type == "Images") {
+		inputAmount = static_cast<int>(std::powf(static_cast<float>(std::stoi(getHalfString(currentlyHighlighted))), 2.0f));
 		trainingData.setNumberOfInputs(inputAmount);
 		trainingData.generateImageDataFromTextFileRandom(("data/data" + currentlyHighlighted + ".txt").c_str(), trainAmount);
 		testData.setNumberOfInputs(inputAmount);

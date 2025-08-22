@@ -19,7 +19,7 @@
 class Visualiser;
 class NeuralNetwork;
 
-class NetworkVisualiserInterface{
+class NetworkVisualiserInterface {
 private:
 	std::atomic <std::shared_ptr<Statistics>*> stats;
 	std::atomic<std::shared_ptr<std::shared_mutex>*> statsMutex;
@@ -27,11 +27,11 @@ private:
 public:
 	NetworkVisualiserInterface();
 	bool isVisualiserSetup();
-	std::tuple<std::string,float,std::vector<int>> getInitialInputs();
+	std::tuple<std::string, float, std::vector<int>> getInitialInputs();
 	void initialiseWorkerThread();
 	void joinAllThreads();
 	void updateConnections(std::vector<VisualUpdate> updates, bool firstPass);
-	void createData(int trainAmount,int testAmount);
+	void createData(int trainAmount, int testAmount);
 	void initialiseVisualiseThread();
 	std::tuple<std::string, float, int> getParametersFromVisualiser();
 	int startTraining(int inputSize);
@@ -52,6 +52,6 @@ public:
 	void setInputDataManager(std::shared_ptr<InputDataManager> m);
 	std::shared_ptr<InputDataManager> getInputDataManager();
 	void invertNeuralNetworkRunning();
-	void updateStats( std::vector<int> ls, std::tuple<int, float> ni, std::string at,bool cls);
+	void updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at, bool cls);
 
 };

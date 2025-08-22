@@ -61,7 +61,7 @@ void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth
 	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 28.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
 }
 void Visualiser::postSetupLogic() {
-	generateNeuronPositions(layers, windowDimensions.first, usableHeight);
+	generateNeuronPositions();
 	neuronRadius = calculateNeuronRadius(usableHeight, 0.01f);
 	calculateConnectionCount();
 }
@@ -125,17 +125,17 @@ void Visualiser::drawCircle(float cx, float cy, float r, int num_segments) {
 	}
 	glEnd();
 }
-void Visualiser::generateNeuronPositions(const std::vector<int>& layers, float width, float height) {
+void Visualiser::generateNeuronPositions() {
 	if (layers.empty()) { return; }
-	float layerSpacingX = width / (layers.size() + 1);
+	float layerSpacingX = windowDimensions.first / (layers.size() + 1);
 	for (size_t i = 0; i < layers.size(); i++) {
 		std::vector<std::pair<float, float>> layerPositions;
-		float neuronSpacingY = height / (layers[i] + 1);
+		float neuronSpacingY = usableHeight / (layers[i] + 1);
 
 		for (int j = 0; j < layers[i]; j++) {
 			float x = (i + 1) * layerSpacingX;
 			float y = (j + 1) * neuronSpacingY;
-			y += (windowDimensions.second - height);
+			y += (windowDimensions.second - usableHeight);
 			layerPositions.push_back({ x, y });
 		}
 		positions.push_back(layerPositions);
@@ -317,7 +317,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 	networkInterface->getInputDataManager()->drawSpecifiedInputForm();
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
-	std::tuple<int,int> dataInputs=drawDataInputs();
+	std::tuple<int, int> dataInputs = drawDataInputs();
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 	std::vector<int> layerArch = drawLayerInputs();
@@ -328,7 +328,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 	if (isNNRunning) { ImGui::BeginDisabled(); }
 
 	std::tuple<int, float> numericInputs = drawNumericInputs();
-	
+
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	std::string activation = drawActivationInput();
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -361,7 +361,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			ImVec4(0.8f, 0.4f, 0.0f, 1.0f),
 		});
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
-	if((networkInterface->getInputDataManager()->getIsDataCreated()) == 0){ ImGui::BeginDisabled(); }
+	if ((networkInterface->getInputDataManager()->getIsDataCreated()) == 0) { ImGui::BeginDisabled(); }
 	bool startTrainingPressed = drawButton(
 		ButtonStyle{
 			ImVec2(ImGui::GetContentRegionAvail().x, 50),
@@ -385,7 +385,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			confirmedLayerSizes = true;
 			isSetup = true;
 			postSetupLogic();
-			
+
 			if (!networkInterface->getInputDataManager()->getIsDataCreated() == 1) {
 				networkInterface->createData(std::get<0>(dataInputs), std::get<1>(dataInputs));
 			}
@@ -476,7 +476,7 @@ std::tuple<int, int> Visualiser::drawDataInputs() {
 	static int trainAmount = 1000;
 	static int testAmount = 100;
 	ImGui::InputInt("Training Data Size", &trainAmount, 10, 100);
-	ImGui::InputInt("Test Data Size", &testAmount, 10,100);
+	ImGui::InputInt("Test Data Size", &testAmount, 10, 100);
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	ImGui::EndChild();
 	return std::make_tuple(trainAmount, testAmount);
