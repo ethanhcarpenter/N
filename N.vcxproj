@@ -191,33 +191,43 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\images\0_1414.png" />
+    <Image Include="data\images\0_2121.png" />
     <Image Include="data\images\0_2828.png" />
     <Image Include="data\images\0_77.png" />
     <Image Include="data\images\1_1414.png" />
+    <Image Include="data\images\1_2121.png" />
     <Image Include="data\images\1_2828.png" />
     <Image Include="data\images\1_77.png" />
     <Image Include="data\images\2_1414.png" />
+    <Image Include="data\images\2_2121.png" />
     <Image Include="data\images\2_2828.png" />
     <Image Include="data\images\2_77.png" />
     <Image Include="data\images\3_1414.png" />
+    <Image Include="data\images\3_2121.png" />
     <Image Include="data\images\3_2828.png" />
     <Image Include="data\images\3_77.png" />
     <Image Include="data\images\4_1414.png" />
+    <Image Include="data\images\4_2121.png" />
     <Image Include="data\images\4_2828.png" />
     <Image Include="data\images\4_77.png" />
     <Image Include="data\images\5_1414.png" />
+    <Image Include="data\images\5_2121.png" />
     <Image Include="data\images\5_2828.png" />
     <Image Include="data\images\5_77.png" />
     <Image Include="data\images\6_1414.png" />
+    <Image Include="data\images\6_2121.png" />
     <Image Include="data\images\6_2828.png" />
     <Image Include="data\images\6_77.png" />
     <Image Include="data\images\7_1414.png" />
+    <Image Include="data\images\7_2121.png" />
     <Image Include="data\images\7_2828.png" />
     <Image Include="data\images\7_77.png" />
     <Image Include="data\images\8_1414.png" />
+    <Image Include="data\images\8_2121.png" />
     <Image Include="data\images\8_2828.png" />
     <Image Include="data\images\8_77.png" />
     <Image Include="data\images\9_1414.png" />
+    <Image Include="data\images\9_2121.png" />
     <Image Include="data\images\9_2828.png" />
     <Image Include="data\images\9_77.png" />
   </ItemGroup>

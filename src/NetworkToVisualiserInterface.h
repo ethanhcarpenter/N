@@ -31,6 +31,7 @@ public:
 	void initialiseWorkerThread();
 	void joinAllThreads();
 	void updateConnections(std::vector<VisualUpdate> updates, bool firstPass);
+	void createData(int trainAmount,int testAmount);
 	void initialiseVisualiseThread();
 	std::tuple<std::string, float, int> getParametersFromVisualiser();
 	int startTraining(int inputSize);

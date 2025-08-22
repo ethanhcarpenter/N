@@ -208,11 +208,15 @@ void NeuralNetwork::updateParameters() {
 
 
 #pragma region Train
-void NeuralNetwork::train(DataSet& data) {
-	maxEpochs = visualiserInterface->startTraining(data.getInputs().size());
+void NeuralNetwork::train() {
+	while (visualiserInterface->getInputDataManager()->getIsDataCreated() == 0);
+	auto& inputs = visualiserInterface->getInputDataManager()->getTrainingInputs();
+	auto& expectedOutputs = visualiserInterface->getInputDataManager()->getTrainingOutputs();
+
+	int inputSize = inputs.size();
+	maxEpochs = visualiserInterface->startTraining(inputSize);
 	stopwatch.start();
 
-	int inputSize = data.getInputs().size();
 
 	for (int epoch = 0; epoch < maxEpochs; ++epoch) {
 
@@ -220,8 +224,8 @@ void NeuralNetwork::train(DataSet& data) {
 
 			visualiserInterface->updateNeuralNetworkParametersFromVisualiser([this]() {updateParameters(); });
 			if (!visualiserInterface->isNeuralNetworkRunning() == 1) { i--;  continue; }
-			auto& inputVals = data.getInputs()[i];
-			auto& targetVals = data.getOutputs()[i];
+			auto& inputVals = inputs[i];
+			auto& targetVals = expectedOutputs[i];
 
 			feedforward(inputVals, epoch == 0, true);
 			backpropagate(targetVals);
@@ -239,10 +243,10 @@ void NeuralNetwork::train(DataSet& data) {
 
 
 #pragma region Test
-void NeuralNetwork::test(DataSet& data) {
+void NeuralNetwork::test() {
 	int correctAmount = 0;
-	auto& inputs = data.getInputs();
-	auto& outputs = data.getOutputs();
+	auto& inputs = visualiserInterface->getInputDataManager()->getTestInputs();
+	auto& outputs = visualiserInterface->getInputDataManager()->getTestOutputs();
 
 	for (size_t i = 0; i < inputs.size(); ++i) {
 		feedforward(inputs[i], false, false);

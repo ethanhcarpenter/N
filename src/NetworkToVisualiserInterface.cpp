@@ -27,6 +27,9 @@ void NetworkVisualiserInterface::joinAllThreads() {
 	threader.joinAllThreads();
 }
 
+//im not skilled enough to generalise this function into a something that accepts a function and its args and remplaces it onto the queue 
+//so im just gonna copy it and use it to create the data
+
 void NetworkVisualiserInterface::updateConnections(std::vector<VisualUpdate> updates, bool firstPass) {
 	std::unique_lock<std::mutex> threadLock(threader.getQueueMutex());
 	std::shared_lock<std::shared_mutex> statsLock(*statsMutex.load()->get());
@@ -42,6 +45,17 @@ void NetworkVisualiserInterface::updateConnections(std::vector<VisualUpdate> upd
 			if (!firstPass) { lastweight = visualiser->getConnectionWeight(layer, from, to, weight); }
 			visualiser->updateConnection(layer, from, to, weight);
 		}
+		});
+
+	threader.getCV().notify_one();
+}
+
+void NetworkVisualiserInterface::createData(int trainAmount, int testAmount) {
+	std::unique_lock<std::mutex> threadLock(threader.getQueueMutex());
+	std::shared_lock<std::shared_mutex> statsLock(*statsMutex.load()->get());
+	if (threader.getQueue().size() != 0) { return; }
+	threader.getQueue().emplace([this,trainAmount,testAmount]() {
+		getInputDataManager()->createData(trainAmount, testAmount);
 		});
 
 	threader.getCV().notify_one();

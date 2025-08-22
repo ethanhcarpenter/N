@@ -8,6 +8,7 @@ class StopWatch {
 	bool isPaused = false;
 public:
 	void start();
+	void reset();
 	void pause();
 	void resume();
 	float getElapsedSeconds() const;

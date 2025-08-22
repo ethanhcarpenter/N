@@ -8,7 +8,7 @@
 
 
 #include "VisualUpdate.h"
-#include "DataSet.h"
+
 #include "Activations.h"
 #include "StopWatch.h"
 
@@ -71,9 +71,8 @@ public:
 	void backpropagate(std::vector<float>& targetVals);
 	std::vector<float> getPredictedOutput();
 	std::vector<std::vector<std::vector<float>>>& getWeights();
-	void train(DataSet& data);
-	void test(DataSet& data);
-	void threadVisualise();
+	void train();
+	void test();
 	void updateParameters();
 	void shutdown();
 };

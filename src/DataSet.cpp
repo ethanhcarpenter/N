@@ -2,7 +2,9 @@
 
 
 
-DataSet::DataSet(int inputNumber) :numberOfInputs(inputNumber) {}
+void DataSet::setNumberOfInputs(int noi) {
+	numberOfInputs = noi;
+}
 
 void DataSet::generateImageDataFromTextFile(const char* path, int amount) {
 	std::srand(std::time(0));
@@ -68,38 +70,11 @@ void DataSet::generateImageDataFromTextFileRandom(const char* path, int amount) 
 	file.close();
 }
 
-void DataSet::generateDataset(bool train, float noise, std::function<std::vector<float>(const std::vector<float>&)> rule) {
-	std::srand(time(0));
-	std::random_device rd;
-	std::mt19937 g(rd());
-	inputs.clear();
-	outputs.clear();
-	int total = 1 << numberOfInputs;
-	int sampleSize = total / (train ? 8 : 10);
-	std::vector<std::vector<float>> allInputs;
-	for (int i = 0; i < total; ++i) {
-		std::vector<float> in(numberOfInputs);
-		for (int bit = 0; bit < numberOfInputs; ++bit) {
-			float base = ((i >> bit) & 1);
-			if (noise > 0)
-				base += ((rand() % 100) / 100.0 * 2 - 1) * noise;
-			in[bit] = base;
-		}
-		allInputs.push_back(in);
-	}
-	std::shuffle(allInputs.begin(), allInputs.end(), g);
-
-	for (int i = 0; i < sampleSize; ++i) {
-		inputs.push_back(allInputs[i]);
-		outputs.push_back(rule(allInputs[i]));
-	}
-}
 
 
 std::vector<std::vector<float>>& DataSet::getInputs() {
 	return inputs;
 }
-
 std::vector<std::vector<float>>& DataSet::getOutputs() {
 	return outputs;
 }

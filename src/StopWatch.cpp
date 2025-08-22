@@ -6,6 +6,9 @@ void StopWatch::start() {
 	pausedDuration = std::chrono::duration<float>::zero();
 	isPaused = false;
 }
+void StopWatch::reset() {
+	start();
+}
 void StopWatch::pause() {
 	if (!isPaused) {
 		pauseTime = std::chrono::high_resolution_clock::now();

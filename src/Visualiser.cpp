@@ -51,13 +51,14 @@ void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth
 	ImGui_ImplOpenGL3_Init("#version 130");
 
 	confirmedLayerSizes = false;
+	initialsedData = false;
 	lastUpdate = glfwGetTime();
 	currentConnection = 0;
 	startingAnimation = true;
 	usableHeight = getTabContentHeight();
 	io = ImGui::GetIO();
-	fontDefault = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 20.0f);
-	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 28.0f);
+	fontDefault = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 20.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
+	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 28.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
 }
 void Visualiser::postSetupLogic() {
 	generateNeuronPositions(layers, windowDimensions.first, usableHeight);
@@ -310,30 +311,28 @@ void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 void Visualiser::drawConsole(int winWidth, int winHeight) {
 	ImGui::PushFont(fontLarge);
 	bool running = networkInterface->isNeuralNetworkRunning();
-
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 	if (confirmedLayerSizes) { ImGui::BeginDisabled(); }
+	networkInterface->getInputDataManager()->drawSpecifiedInputForm();
+
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	std::tuple<int,int> dataInputs=drawDataInputs();
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
 	std::vector<int> layerArch = drawLayerInputs();
 	if (confirmedLayerSizes) { ImGui::EndDisabled(); }
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 	if (isNNRunning) { ImGui::BeginDisabled(); }
+
 	std::tuple<int, float> numericInputs = drawNumericInputs();
-	if (isNNRunning) { ImGui::EndDisabled(); }
-
+	
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
-
-	if (isNNRunning) { ImGui::BeginDisabled(); }
 	std::string activation = drawActivationInput();
-	if (isNNRunning) { ImGui::EndDisabled(); }
-
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
-	networkInterface->getInputDataManager()->drawSpecifiedInputForm();
-
-	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	bool confirmInputs = drawButton(
 		ButtonStyle{
 			ImVec2((ImGui::GetContentRegionAvail().x), 50),
@@ -346,9 +345,12 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			ImVec2((ImGui::GetContentRegionAvail().x), 50),
 			"Change Inputs",
 			ImVec4(0.2f, 0.5f, 0.9f, 1.0f),
-			ImVec4(0.3f, 0.6f, 1.0f, 1.0f), 
-			ImVec4(0.1f, 0.4f, 0.8f, 1.0f), 
+			ImVec4(0.3f, 0.6f, 1.0f, 1.0f),
+			ImVec4(0.1f, 0.4f, 0.8f, 1.0f),
 		}, isSetup);
+
+	if (isNNRunning) { ImGui::EndDisabled(); }
+
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	drawButton(
 		ButtonStyle{
@@ -359,6 +361,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			ImVec4(0.8f, 0.4f, 0.0f, 1.0f),
 		});
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	if((networkInterface->getInputDataManager()->getIsDataCreated()) == 0){ ImGui::BeginDisabled(); }
 	bool startTrainingPressed = drawButton(
 		ButtonStyle{
 			ImVec2(ImGui::GetContentRegionAvail().x, 50),
@@ -374,7 +377,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			ImVec4(0.3f, 0.9f, 0.3f, 1.0f),
 			ImVec4(0.1f, 0.7f, 0.1f, 1.0f),
 		}, running);
-
+	if ((networkInterface->getInputDataManager()->getIsDataCreated()) == 0) { ImGui::EndDisabled(); }
 	if (confirmInputs) {
 		networkInterface->updateStats(layerArch, numericInputs, activation, confirmedLayerSizes);
 		layers = layerArch;
@@ -382,6 +385,10 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			confirmedLayerSizes = true;
 			isSetup = true;
 			postSetupLogic();
+			
+			if (!networkInterface->getInputDataManager()->getIsDataCreated() == 1) {
+				networkInterface->createData(std::get<0>(dataInputs), std::get<1>(dataInputs));
+			}
 		}
 	}
 	if (startTrainingPressed) {
@@ -412,7 +419,7 @@ bool Visualiser::drawButton(ButtonStyle defaultStyle, ButtonStyle constantPresse
 std::vector<int> Visualiser::drawLayerInputs() {
 	ImGui::Text("Network Architecture");
 
-	static int numLayers = 4;
+	static int numLayers = 3;
 	ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(100, 100, 250, 100));
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
 	ImGui::InputInt("Number of Layers", &numLayers);
@@ -420,8 +427,22 @@ std::vector<int> Visualiser::drawLayerInputs() {
 	if (numLayers > 63) numLayers = 63;
 	ImGui::PopStyleColor(2);
 
-	static std::vector<int> layers = { 49, 32,64, 10 };
-	if (layers.size() != numLayers) { layers.resize(numLayers, 1); }
+	int inputSize = networkInterface->getInputDataManager()->getInputSize();
+	int outputSize = networkInterface->getInputDataManager()->getOutputSize();
+
+	static std::vector<int> layers = { inputSize, 12, outputSize };
+	layers[0] = inputSize;
+	if (layers.size() > 1) layers.back() = outputSize;
+
+	int numHidden = numLayers - 2;
+	int currentHidden = layers.size() - 2;
+
+	if (numHidden > currentHidden) {
+		layers.insert(layers.begin() + 1, numHidden - currentHidden, 1);
+	}
+	else if (numHidden < currentHidden) {
+		layers.erase(layers.begin() + 1 + numHidden, layers.begin() + 1 + currentHidden);
+	}
 
 	float baseLayerHeight = 32.0f;
 	float maxChildHeight = 300.0f;
@@ -430,21 +451,39 @@ std::vector<int> Visualiser::drawLayerInputs() {
 	ImGui::BeginChild("NetworkArch", ImVec2(0, childHeight), true);
 	for (int i = 0; i < numLayers; i++) {
 		char label[64];
-		if (i == 0) snprintf(label, sizeof(label), "Input Layer ");
-		else if (i == numLayers - 1) snprintf(label, sizeof(label), "Output Layer ");
+		if (i == 0) snprintf(label, sizeof(label), "Input Layer");
+		else if (i == numLayers - 1) snprintf(label, sizeof(label), "Output Layer");
 		else snprintf(label, sizeof(label), "Hidden Layer %d", i);
-
 		ImGui::PushItemWidth(150);
-		ImGui::InputInt(label, &layers[i]);
+		if (i == 0 || i == numLayers - 1) {
+			ImGui::BeginDisabled();
+			ImGui::InputInt(label, &layers[i]);
+			ImGui::EndDisabled();
+		}
+		else {
+			ImGui::InputInt(label, &layers[i]);
+		}
 		if (layers[i] < 1) layers[i] = 1;
 		ImGui::PopItemWidth();
 	}
 	ImGui::EndChild();
+
 	return layers;
 }
+std::tuple<int, int> Visualiser::drawDataInputs() {
+	ImGui::Text("Data Parameters");
+	ImGui::BeginChild("DataParams", ImVec2(0, 120), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
+	static int trainAmount = 1000;
+	static int testAmount = 100;
+	ImGui::InputInt("Training Data Size", &trainAmount, 10, 100);
+	ImGui::InputInt("Test Data Size", &testAmount, 10,100);
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+	ImGui::EndChild();
+	return std::make_tuple(trainAmount, testAmount);
+}
 std::tuple<int, float> Visualiser::drawNumericInputs() {
-	ImGui::BeginChild("TrainingParams", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
 	ImGui::Text("Training Parameters");
+	ImGui::BeginChild("TrainingParams", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
 	static int epochs = 10000;
 	static float learningRate = 0.005f;
 	ImGui::InputInt("Maximum Epochs", &epochs, 10, 100);
@@ -453,8 +492,8 @@ std::tuple<int, float> Visualiser::drawNumericInputs() {
 	return std::make_tuple(epochs, learningRate);
 }
 std::string Visualiser::drawActivationInput() {
-	ImGui::BeginChild("Activation", ImVec2(0, 90), true);
 	ImGui::Text("Activation Function");
+	ImGui::BeginChild("Activation", ImVec2(0, 90), true);
 	static int activationType = 1;
 	const char* activations[] = { "relu", "sigmoid", "tanh", "linear" };
 	ImGui::Combo("Type", &activationType, activations, IM_ARRAYSIZE(activations));

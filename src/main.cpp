@@ -17,34 +17,37 @@
 #include "InputDataManager.h"
 #include "Visualiser.h"
 #include "NeuralNetwork.h"
-#include "DataSet.h"
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <sstream>
 
 
 
 int main() {
+	std::vector < std::string> imageQualities = { "77","1414","2121","2828" };
 	std::shared_ptr<NetworkVisualiserInterface> face = std::make_shared<NetworkVisualiserInterface>();
-	std::shared_ptr<InputDataManager> manager=std::make_shared<InputDataManager>();
+	std::shared_ptr<InputDataManager> manager = std::make_shared<InputDataManager>(imageQualities,".png");
 	std::shared_ptr<NeuralNetwork> n = std::make_shared<NeuralNetwork>();
-	std::shared_ptr<Visualiser> v=std::make_shared<Visualiser>(face);
+	std::shared_ptr<Visualiser> v = std::make_shared<Visualiser>(face);
 	face->setMainNeuralNetwork(n);
 	face->setVisualiser(v);
 	face->setInputDataManager(manager);
 
 	n->setup(face);
-	DataSet data = { 49 };
-	std::ostringstream oss;
-	oss << "data\\data" << 7 << 7 << ".txt";
-	std::string filename = oss.str();
+	
 
-	data.generateImageDataFromTextFileRandom(filename.c_str(), 1000);
-	n->train(data);
 
-	data.generateImageDataFromTextFileRandom(filename.c_str(), 1000);
-	n->test(data);
+
+
+
+
+
+
+	n->train();
+
+	n->test();
 
 	n->shutdown();
 }

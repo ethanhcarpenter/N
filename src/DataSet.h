@@ -13,8 +13,7 @@ private:
 	std::vector<std::vector<float>> outputs;
 	int numberOfInputs;
 public:
-	DataSet(int inputNumber);
-	void generateDataset(bool train, float noise, std::function<std::vector<float>(const std::vector<float>&)> rule);
+	void setNumberOfInputs(int noi);
 	void generateImageDataFromTextFile(const char* path, int amount);
 	void generateImageDataFromTextFileRandom(const char* path, int amount);
 	std::vector<std::vector<float>>& getInputs();

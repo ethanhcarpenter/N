@@ -250,6 +250,36 @@
     <Image Include="data\images\9_2828.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
+    <Image Include="data\images\0_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\1_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\3_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\2_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\8_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\9_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\7_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\6_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\5_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\images\4_2121.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\data77.txt">

@@ -58,6 +58,7 @@ private:
 	bool startingAnimation;
 	bool isSetup;
 	bool isNNRunning;
+	bool initialsedData;
 	float neuronRadius;
 	ImGuiWindowFlags windowFlags;
 	int calculatedConnectionCount;
@@ -89,6 +90,7 @@ public:
 	void drawConsole(int winWidth, int winHeight);
 	std::vector<int> drawLayerInputs();
 	std::tuple<int, float> drawNumericInputs();
+	std::tuple<int, int> drawDataInputs();
 	std::string drawActivationInput();
 	bool drawButton(ButtonStyle defaultStyle, ButtonStyle constantPressedStyle = {}, bool lock = false);
 	void calculateConnectionCount();
