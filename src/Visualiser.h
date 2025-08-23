@@ -49,12 +49,11 @@ private:
 	GLFWwindow* window;
 	std::vector<std::vector<std::pair<float, float>>> positions;
 	std::vector<int> layers;
-	std::pair<int, int> windowDimensions;
-	int usableHeight;
+	std::tuple<int, int> windowDimensions;
+	float usableHeight;
+	std::string activeTab;
 	std::vector<Connection> connections;
 	std::unordered_map<std::string, int>connectionsIndexes;
-	float lastUpdate;
-	size_t currentConnection;
 	bool startingAnimation;
 	bool isSetup;
 	bool isNNRunning;
@@ -68,8 +67,7 @@ private:
 	bool confirmedLayerSizes;
 public:
 	Visualiser(std::shared_ptr<NetworkVisualiserInterface> ni);
-	void setup(const char* name, int targetMonitorIndex, int windowWidth = -1, int windowHeight = -1);
-	int getTabContentHeight();
+	void setup(const char* name, int targetMonitorIndex, int windowWidth = -1, int  windowHeight = -1);
 	void generateNeuronPositions();
 	void drawCircle(float cx, float cy, float r, int num_segments);
 	const float calculateNeuronRadius(float height, float margin);
@@ -77,17 +75,17 @@ public:
 	std::tuple<float, float, float, float> generateColour(float weight);
 	void drawConnections();
 	void terminate();
-	const int getCurrentConnection();
 	std::vector<Connection>& getConnections();
 	GLFWwindow* getWindow();
 	void addConnectionIndex(int fromLayer, int from, int to);
 	std::string generateConnectionUID(int fromLayer, int from, int to);
-	const float getConnectionWeight(int fromLayer, int from, int to, float weight);
+	const float getConnectionWeight(int fromLayer, int from, int to);
 	void mainLoop();
+	void toggleTraining();
 	const bool isSettingUp();
 	void updateConnection(int fromLayer, int from, int to, float weight);
 	void drawNeuralNetwork(int winWidth, int winHeight);
-	void drawConsole(int winWidth, int winHeight);
+	void drawConsole();
 	std::vector<int> drawLayerInputs();
 	std::tuple<int, float> drawNumericInputs();
 	std::tuple<int, int> drawDataInputs();

@@ -1,5 +1,5 @@
 #include "Visualiser.h"
-#include "NetworkToVisualiserInterface.h"
+#include "NetworkVisualiserInterface.h"
 
 
 
@@ -9,6 +9,7 @@
 Visualiser::Visualiser(std::shared_ptr<NetworkVisualiserInterface> ni) :isSetup(false), isNNRunning(false) {
 	targetMonitor = nullptr;
 	networkInterface.swap(ni);
+	activeTab = "console";
 };
 void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth, int windowHeight) {
 	if (!glfwInit()) return;
@@ -16,13 +17,15 @@ void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth
 	GLFWmonitor** monitors = glfwGetMonitors(&count);
 	targetMonitor = monitors[targetMonitorIndex];
 	mode = glfwGetVideoMode(targetMonitor);
-	windowDimensions.first = (windowWidth == -1) ? mode->width : windowWidth;
-	windowDimensions.second = (windowHeight == -1) ? mode->height : windowHeight;
+	windowDimensions = std::make_tuple(
+		(windowWidth == -1) ? mode->width : windowWidth,
+		(windowHeight == -1) ? mode->height : windowHeight
+	);
 	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	window = glfwCreateWindow(
-		windowDimensions.first,
-		windowDimensions.second,
+		std::get<0>(windowDimensions),
+		std::get<1>(windowDimensions),
 		name,
 		NULL,
 		NULL
@@ -44,18 +47,17 @@ void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth
 		| ImGuiWindowFlags_NoBringToFrontOnFocus;
 
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
 	ImGui::StyleColorsDark();
 
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 130");
 
 	confirmedLayerSizes = false;
+	usableHeight = 0;
 	initialsedData = false;
-	lastUpdate = glfwGetTime();
-	currentConnection = 0;
 	startingAnimation = true;
-	usableHeight = getTabContentHeight();
+	usableHeight = static_cast<float>(std::get<1>(windowDimensions));
 	io = ImGui::GetIO();
 	fontDefault = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 20.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
 	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 28.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
@@ -65,30 +67,7 @@ void Visualiser::postSetupLogic() {
 	neuronRadius = calculateNeuronRadius(usableHeight, 0.01f);
 	calculateConnectionCount();
 }
-int Visualiser::getTabContentHeight() {
-	int usableHeight = 0;
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
 
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-	ImGui::Begin("Dummy", nullptr, windowFlags);
-
-	if (ImGui::BeginTabBar("Tabs")) {
-		ImGui::BeginTabItem("Neural Network");
-		usableHeight = ImGui::GetContentRegionAvail().y;
-		ImGui::EndTabItem();
-		ImGui::EndTabBar();
-		;
-	}
-
-	ImGui::End();
-
-	ImGui::EndFrame();
-	ImGui::Render();
-	return usableHeight;
-}
 const bool Visualiser::isSettingUp() { return !isSetup; }
 GLFWwindow* Visualiser::getWindow() { return window; }
 void Visualiser::terminate() {
@@ -108,7 +87,7 @@ void Visualiser::terminate() {
 void Visualiser::drawNeurons() {
 	glColor3f(0.0f, 0.0f, 1.0f);
 	for (auto& layer : positions) {
-		int a = 12;
+
 		for (auto& neuron : layer) {
 			drawCircle(neuron.first, neuron.second, neuronRadius, 64);
 		}
@@ -127,7 +106,7 @@ void Visualiser::drawCircle(float cx, float cy, float r, int num_segments) {
 }
 void Visualiser::generateNeuronPositions() {
 	if (layers.empty()) { return; }
-	float layerSpacingX = windowDimensions.first / (layers.size() + 1);
+	float layerSpacingX = static_cast<float>(std::get<0>(windowDimensions) / (layers.size() + 1));
 	for (size_t i = 0; i < layers.size(); i++) {
 		std::vector<std::pair<float, float>> layerPositions;
 		float neuronSpacingY = usableHeight / (layers[i] + 1);
@@ -135,12 +114,11 @@ void Visualiser::generateNeuronPositions() {
 		for (int j = 0; j < layers[i]; j++) {
 			float x = (i + 1) * layerSpacingX;
 			float y = (j + 1) * neuronSpacingY;
-			y += (windowDimensions.second - usableHeight);
+			y += (std::get<1>(windowDimensions) - usableHeight);
 			layerPositions.push_back({ x, y });
 		}
 		positions.push_back(layerPositions);
 	}
-	int a = 12;
 }
 const float Visualiser::calculateNeuronRadius(float height, float margin) {
 	int maxNeurons = *max_element(layers.begin(), layers.end());
@@ -197,7 +175,6 @@ void Visualiser::drawConnections() {
 	}
 	glLineWidth(1.0f);
 }
-const int Visualiser::getCurrentConnection() { return currentConnection; }
 std::vector<Connection>& Visualiser::getConnections() { return connections; }
 std::tuple<float, float, float, float> Visualiser::generateColour(float weight) {
 	float opacity = std::min(1.0f, abs(weight));
@@ -219,7 +196,7 @@ std::string Visualiser::generateConnectionUID(int fromLayer, int from, int to) {
 	std::string uid = "from layer:" + std::to_string(fromLayer) + " node: " + std::to_string(from) + " To layer: " + std::to_string(fromLayer + 1) + " node: " + std::to_string(to);
 	return uid;
 }
-const float Visualiser::getConnectionWeight(int fromLayer, int from, int to, float weight) {
+const float Visualiser::getConnectionWeight(int fromLayer, int from, int to) {
 	std::string uid = generateConnectionUID(fromLayer, from, to);
 	auto it = connectionsIndexes.find(uid);
 	int index = it->second;
@@ -276,15 +253,15 @@ void Visualiser::drawNeuralNetwork(int winWidth, int winHeight) {
 }
 void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 	ImGui::PushFont(fontDefault);
-	ImGui::SetNextWindowPos(ImVec2(winWidth - 320, winHeight - usableHeight), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(winWidth - 320.0f, winHeight - usableHeight), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(300, 250), ImGuiCond_Always);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.1f, 0.1f, 0.1f, 0.7f));
 
 	ImGui::Begin("Training Overlay", nullptr,
-		windowFlags | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing);
 
 	ImGui::TextColored(ImVec4(0.2f, 0.7f, 1.0f, 1.0f), "Epoch %d", networkInterface->getCurrentEpoch());
@@ -297,6 +274,23 @@ void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 	ImGui::TextColored(ImVec4(0.2f, 0.7f, 1.0f, 1.0f), "AET: %.0f ms", networkInterface->getAverageEpochTime());
 	ImGui::TextColored(ImVec4(0.2f, 0.7f, 1.0f, 1.0f), "Accuracy: %.0f%%", networkInterface->getTestAccuracy());
 
+	bool stopTrainingPressed = drawButton(
+		ButtonStyle{
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
+			"Start Training",
+			ImVec4(0.8f, 0.2f, 0.2f, 1.0f),
+			ImVec4(0.9f, 0.3f, 0.3f, 1.0f),
+			ImVec4(0.7f, 0.1f, 0.1f, 1.0f),
+		},
+		ButtonStyle{
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
+			"Stop Training",
+			ImVec4(0.2f, 0.8f, 0.2f, 1.0f),
+			ImVec4(0.3f, 0.9f, 0.3f, 1.0f),
+			ImVec4(0.1f, 0.7f, 0.1f, 1.0f),
+		}, networkInterface->isNeuralNetworkRunning());
+	if (stopTrainingPressed) { toggleTraining(); }
+
 	ImGui::End();
 
 	ImGui::PopStyleColor();
@@ -308,10 +302,8 @@ void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 
 
 #pragma region Console-Tab
-void Visualiser::drawConsole(int winWidth, int winHeight) {
+void Visualiser::drawConsole() {
 	ImGui::PushFont(fontLarge);
-	bool running = networkInterface->isNeuralNetworkRunning();
-	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 	if (confirmedLayerSizes) { ImGui::BeginDisabled(); }
 	networkInterface->getInputDataManager()->drawSpecifiedInputForm();
@@ -352,14 +344,6 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 	if (isNNRunning) { ImGui::EndDisabled(); }
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
-	drawButton(
-		ButtonStyle{
-			ImVec2((ImGui::GetContentRegionAvail().x), 50),
-			"Reset",
-			ImVec4(0.9f, 0.5f, 0.1f, 1.0f),
-			ImVec4(1.0f, 0.6f, 0.2f, 1.0f),
-			ImVec4(0.8f, 0.4f, 0.0f, 1.0f),
-		});
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	if ((networkInterface->getInputDataManager()->getIsDataCreated()) == 0) { ImGui::BeginDisabled(); }
 	bool startTrainingPressed = drawButton(
@@ -376,7 +360,7 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			ImVec4(0.2f, 0.8f, 0.2f, 1.0f),
 			ImVec4(0.3f, 0.9f, 0.3f, 1.0f),
 			ImVec4(0.1f, 0.7f, 0.1f, 1.0f),
-		}, running);
+		}, networkInterface->isNeuralNetworkRunning());
 	if ((networkInterface->getInputDataManager()->getIsDataCreated()) == 0) { ImGui::EndDisabled(); }
 	if (confirmInputs) {
 		networkInterface->updateStats(layerArch, numericInputs, activation, confirmedLayerSizes);
@@ -391,12 +375,15 @@ void Visualiser::drawConsole(int winWidth, int winHeight) {
 			}
 		}
 	}
-	if (startTrainingPressed) {
-		networkInterface->invertNeuralNetworkRunning();
-		isNNRunning = !isNNRunning;
-	}
+	if (startTrainingPressed) { toggleTraining(); }
 	ImGui::PopFont();
 
+}
+void Visualiser::toggleTraining() {
+	networkInterface->invertNeuralNetworkRunning();
+	isNNRunning = !isNNRunning;
+	if (isNNRunning) { activeTab = "nn"; }
+	if (!isNNRunning) { activeTab = "console"; }
 }
 bool Visualiser::drawButton(ButtonStyle defaultStyle, ButtonStyle constantPressedStyle, bool lock) {
 	bool confirm = false;
@@ -430,18 +417,19 @@ std::vector<int> Visualiser::drawLayerInputs() {
 	int inputSize = networkInterface->getInputDataManager()->getInputSize();
 	int outputSize = networkInterface->getInputDataManager()->getOutputSize();
 
-	static std::vector<int> layers = { inputSize, 12, outputSize };
-	layers[0] = inputSize;
-	if (layers.size() > 1) layers.back() = outputSize;
+	static std::vector<int> inputtedLayers = { inputSize, 12, outputSize };
+	inputtedLayers[0] = inputSize;
+	int layersSize = static_cast<int>(inputtedLayers.size());
+	if (layersSize > 1) inputtedLayers.back() = outputSize;
 
 	int numHidden = numLayers - 2;
-	int currentHidden = layers.size() - 2;
+	int currentHidden = layersSize - 2;
 
 	if (numHidden > currentHidden) {
-		layers.insert(layers.begin() + 1, numHidden - currentHidden, 1);
+		inputtedLayers.insert(inputtedLayers.begin() + 1, numHidden - currentHidden, 1);
 	}
 	else if (numHidden < currentHidden) {
-		layers.erase(layers.begin() + 1 + numHidden, layers.begin() + 1 + currentHidden);
+		inputtedLayers.erase(inputtedLayers.begin() + 1 + numHidden, inputtedLayers.begin() + 1 + currentHidden);
 	}
 
 	float baseLayerHeight = 32.0f;
@@ -457,18 +445,18 @@ std::vector<int> Visualiser::drawLayerInputs() {
 		ImGui::PushItemWidth(150);
 		if (i == 0 || i == numLayers - 1) {
 			ImGui::BeginDisabled();
-			ImGui::InputInt(label, &layers[i]);
+			ImGui::InputInt(label, &inputtedLayers[i]);
 			ImGui::EndDisabled();
 		}
 		else {
-			ImGui::InputInt(label, &layers[i]);
+			ImGui::InputInt(label, &inputtedLayers[i]);
 		}
-		if (layers[i] < 1) layers[i] = 1;
+		if (inputtedLayers[i] < 1) inputtedLayers[i] = 1;
 		ImGui::PopItemWidth();
 	}
 	ImGui::EndChild();
 
-	return layers;
+	return inputtedLayers;
 }
 std::tuple<int, int> Visualiser::drawDataInputs() {
 	ImGui::Text("Data Parameters");
@@ -484,7 +472,7 @@ std::tuple<int, int> Visualiser::drawDataInputs() {
 std::tuple<int, float> Visualiser::drawNumericInputs() {
 	ImGui::Text("Training Parameters");
 	ImGui::BeginChild("TrainingParams", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
-	static int epochs = 10000;
+	static int epochs = 100;
 	static float learningRate = 0.005f;
 	ImGui::InputInt("Maximum Epochs", &epochs, 10, 100);
 	ImGui::InputFloat("Learning Rate", &learningRate, 0.001f, 0.01f, "%.5f");
@@ -494,7 +482,7 @@ std::tuple<int, float> Visualiser::drawNumericInputs() {
 std::string Visualiser::drawActivationInput() {
 	ImGui::Text("Activation Function");
 	ImGui::BeginChild("Activation", ImVec2(0, 90), true);
-	static int activationType = 1;
+	static int activationType = 0;
 	const char* activations[] = { "relu", "sigmoid", "tanh", "linear" };
 	ImGui::Combo("Type", &activationType, activations, IM_ARRAYSIZE(activations));
 	ImGui::EndChild();
@@ -507,14 +495,16 @@ std::string Visualiser::drawActivationInput() {
 #pragma region Main-Loop
 void Visualiser::mainLoop() {
 
+	/*glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {*/
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		mods;
+		scancode;
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		});
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
-
 		int winWidth, winHeight;
 		glfwGetFramebufferSize(window, &winWidth, &winHeight);
 		glViewport(0, 0, winWidth, winHeight);
@@ -525,32 +515,21 @@ void Visualiser::mainLoop() {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		int tabShowingIndex = 0;
+
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2((float)winWidth, (float)winHeight));
+		ImGui::SetNextWindowSize(ImVec2(static_cast<float>(winWidth), static_cast<float>(winHeight)));
 		if (ImGui::Begin("Main Tabs", nullptr, windowFlags | ImGuiWindowFlags_NoBackground)) {
-			if (ImGui::BeginTabBar("Tabs")) {
-				/*if (ImGui::BeginTabItem("Starting Tab")) {
-					tabShowingIndex = 0;
-					ImGui::EndTabItem();
-				}*/
-				if (ImGui::BeginTabItem("Console")) {
-					tabShowingIndex = 1;
-					drawConsole(winWidth, winHeight);
-					ImGui::EndTabItem();
-				}
-				if (isNNRunning && ImGui::BeginTabItem("Neural Network")) {
-					tabShowingIndex = 2;
-					ImGui::EndTabItem();
-				}
 
-
-				ImGui::EndTabBar();
+			// Render content directly based on activeTab
+			if (activeTab == "console") {
+				drawConsole();
 			}
+			else if (activeTab == "nn") {
+				drawNeuralNetwork(winWidth, winHeight);
+			}
+
 			ImGui::End();
 		}
-		if (tabShowingIndex == 2) { drawNeuralNetwork(winWidth, winHeight); }
-
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

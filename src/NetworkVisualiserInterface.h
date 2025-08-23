@@ -41,8 +41,10 @@ public:
 	void updateWeightStatistic(std::vector<std::vector<std::vector<float>>> weights);
 	void updateEpochStatistic(StopWatch& stopwatch);
 	void updateAccuracyStatistic(float accuracy);
+	void updateReset(bool r);
 	int getCurrentInput();
 	int getCurrentEpoch();
+	bool getReset();
 	int getTotalInputs();
 	float getLastEpochTime();
 	float getAverageEpochTime();

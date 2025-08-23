@@ -3,7 +3,7 @@
 
 
 #pragma region Initalise
-Statistics::Statistics(){}
+Statistics::Statistics() {}
 #pragma endregion
 
 
@@ -23,6 +23,9 @@ std::string Statistics::getActivationType() {
 }
 float Statistics::getTestAccuracy() {
 	return testAccuracy.load();
+}
+bool Statistics::getReset() {
+	return reset.load();
 }
 int Statistics::getTotalInputs() {
 	std::lock_guard<std::mutex> lock(mtx);
@@ -96,6 +99,10 @@ void Statistics::setTestAccuracy(float a) {
 void Statistics::setRunning(bool r) {
 	std::lock_guard<std::mutex> lock(mtx);
 	running = r;
+}
+void Statistics::setReset(bool r) {
+	std::lock_guard<std::mutex> lock(mtx);
+	reset = r;
 }
 void Statistics::setMaxEpochs(int e) {
 	std::lock_guard<std::mutex> lock(mtx);

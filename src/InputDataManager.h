@@ -29,7 +29,7 @@ private:
 	std::unordered_map<std::string, ImTextureID> imageTextures;
 	std::vector<std::string> imageQuailities;
 public:
-	InputDataManager(std::vector<std::string> iq, std::string imageFormat);
+	void setup(std::vector<std::string> iq, std::string imageFormat);
 	std::string getType();
 	void drawSpecifiedInputForm();
 	void drawImages();

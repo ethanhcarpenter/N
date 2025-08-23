@@ -29,7 +29,7 @@ GLuint InputDataManager::loadTexture(std::string filename) {
 	return textureID;
 }
 
-InputDataManager::InputDataManager(std::vector<std::string> iq, std::string imF) {
+void InputDataManager::setup(std::vector<std::string> iq, std::string imF) {
 	numberOfSampleImages = static_cast<int>(iq.size());
 	currentlyHighlighted = iq[0];
 	imageQuailities = iq;
@@ -40,7 +40,6 @@ InputDataManager::InputDataManager(std::vector<std::string> iq, std::string imF)
 	inputAmount = 0;
 	outputAmount = 0;
 }
-
 std::string InputDataManager::getType() {
 	return type;
 }
@@ -63,6 +62,7 @@ void InputDataManager::drawSpecifiedInputForm() {
 	ImGui::Combo("Type", &inputType, inputs, IM_ARRAYSIZE(inputs));
 	type = inputs[inputType];
 	if (type == "Images") {
+		if (imageTextures.size() == 0) { createSampleImageTextures(); }
 		drawImages();
 		inputAmount = static_cast<int>(std::powf(static_cast<float>(std::stoi(getHalfString(currentlyHighlighted))), 2.0f));
 		outputAmount = 10;
@@ -92,7 +92,7 @@ void InputDataManager::drawImages() {
 
 	float textHeight = ImGui::GetTextLineHeight();
 	ImVec2 childSize(maxImageWidth, imageHeight + textHeight + spacing);
-	createSampleImageTextures();
+
 
 	for (auto& quality : imageQuailities) {
 		ImGui::BeginChild(("SampleImage" + quality).c_str(), childSize, false);

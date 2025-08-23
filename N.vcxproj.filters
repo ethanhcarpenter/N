@@ -51,7 +51,7 @@
     <ClInclude Include="src\Visualiser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\NetworkToVisualiserInterface.h">
+    <ClInclude Include="src\NetworkVisualiserInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Statistics.h">
@@ -119,7 +119,7 @@
     <ClCompile Include="src\Visualiser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\NetworkToVisualiserInterface.cpp">
+    <ClCompile Include="src\NetworkVisualiserInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Statistics.cpp">
@@ -149,9 +149,11 @@
     <ClCompile Include="libs\imgui\imgui_widgets.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\InputDataManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Run Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -250,35 +252,35 @@
     <Image Include="data\images\9_2828.png">
       <Filter>Resource Files\Images</Filter>
     </Image>
+    <Image Include="data\images\9_2121.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
     <Image Include="data\images\0_2121.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="data\images\1_2121.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\images\3_2121.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="data\images\2_2121.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="data\images\8_2121.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\images\9_2121.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\images\7_2121.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\images\6_2121.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="data\images\5_2121.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="data\images\3_2121.png">
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="data\images\4_2121.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\5_2121.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\6_2121.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\7_2121.png">
+      <Filter>Resource Files\Images</Filter>
+    </Image>
+    <Image Include="data\images\8_2121.png">
+      <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

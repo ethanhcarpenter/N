@@ -25,6 +25,7 @@ private:
 	std::atomic<float> error{ 0.0f };
 	std::atomic<float> testAccuracy{ 0.0f };
 	std::atomic<bool> running{ false };
+	std::atomic<bool> reset{ false };
 	std::atomic<std::vector<int>*>layerSizes{ new std::vector<int> };
 	std::atomic<std::vector<std::vector<std::vector<float>>>*> weights{ new std::vector<std::vector<std::vector<float>>> };
 	std::atomic<bool> neuralNetworkNeedsUpdating{ false };
@@ -53,9 +54,11 @@ public:
 	int getTotalInputs();
 	std::string getActivationType();
 	float getAverageEpochTime();
+	bool getReset();
 	float getLastEpochTime();
 	float getTestAccuracy();
 	void setTestAccuracy(float a);
+	void setReset(bool r);
 	void setRunning(bool r);
 	bool getRunning();
 	void setWeights(std::vector<std::vector<std::vector<float>>> w);

@@ -100,6 +100,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,6 +139,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,7 +164,7 @@
     <ClInclude Include="libs\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Activations.h" />
     <ClInclude Include="src\DataSet.h" />
-    <ClInclude Include="src\NetworkToVisualiserInterface.h" />
+    <ClInclude Include="src\NetworkVisualiserInterface.h" />
     <ClInclude Include="src\NeuralNetwork.h" />
     <ClInclude Include="src\Statistics.h" />
     <ClInclude Include="src\StopWatch.h" />
@@ -182,7 +184,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Activations.cpp" />
     <ClCompile Include="src\DataSet.cpp" />
-    <ClCompile Include="src\NetworkToVisualiserInterface.cpp" />
+    <ClCompile Include="src\NetworkVisualiserInterface.cpp" />
     <ClCompile Include="src\NeuralNetwork.cpp" />
     <ClCompile Include="src\Statistics.cpp" />
     <ClCompile Include="src\StopWatch.cpp" />

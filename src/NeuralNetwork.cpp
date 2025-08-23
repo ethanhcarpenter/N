@@ -1,5 +1,5 @@
 #include "NeuralNetwork.h"
-#include "NetworkToVisualiserInterface.h"
+#include "NetworkVisualiserInterface.h"
 
 static float randomWeight(const std::string& activationType, int fanIn, int fanOut) {
 	static std::mt19937 gen(std::random_device{}());
@@ -81,11 +81,12 @@ void NeuralNetwork::setup(std::shared_ptr<NetworkVisualiserInterface> vi) {
 		layers.emplace_back(size, type);
 		index++;
 	}
-	initWeights();
+	
 	visualiserInterface->initialiseWorkerThread();
 
 }
 void NeuralNetwork::initWeights() {
+	weights.clear();
 	weights.resize(layers.size() - 1);
 
 	for (size_t l = 0; l < layers.size() - 1; ++l) {
@@ -210,15 +211,17 @@ void NeuralNetwork::updateParameters() {
 #pragma region Train
 void NeuralNetwork::train() {
 	while (visualiserInterface->getInputDataManager()->getIsDataCreated() == 0);
+	initWeights();
 	auto& inputs = visualiserInterface->getInputDataManager()->getTrainingInputs();
 	auto& expectedOutputs = visualiserInterface->getInputDataManager()->getTrainingOutputs();
 
 	int inputSize = static_cast<int>(inputs.size());
 	maxEpochs = visualiserInterface->startTraining(inputSize);
 	stopwatch.start();
-
+	int batchSize = 8;
 
 	for (int epoch = 0; epoch < maxEpochs; ++epoch) {
+		Gradients grads(weights, layers);
 
 		for (int i = 0; i < inputSize; ++i) {
 
@@ -228,7 +231,24 @@ void NeuralNetwork::train() {
 			auto& targetVals = expectedOutputs[i];
 
 			feedforward(inputVals, epoch == 0, true);
-			backpropagate(targetVals);
+
+			accumulateGradients(expectedOutputs[i], grads);
+
+			// Apply batch update
+			if ((i + 1) % batchSize == 0 || i == inputSize - 1) {
+				grads.apply(weights, layers, learningRate, batchSize);
+				grads = Gradients(weights, layers); // reset for next batch
+			}
+
+
+
+
+
+
+
+
+			targetVals;
+			//backpropagate(targetVals);
 
 			visualiserInterface->updateInputStatistic();
 			visualiserInterface->updateWeightStatistic(weights);

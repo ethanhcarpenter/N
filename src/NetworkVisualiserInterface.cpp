@@ -1,4 +1,4 @@
-#include "NetworkToVisualiserInterface.h"
+#include "NetworkVisualiserInterface.h"
 
 NetworkVisualiserInterface::NetworkVisualiserInterface() {
 	statsMutex.store(new std::shared_ptr<std::shared_mutex>(std::make_shared<std::shared_mutex>()));
@@ -42,7 +42,7 @@ void NetworkVisualiserInterface::updateConnections(std::vector<VisualUpdate> upd
 			int to = u.to;
 			float weight = u.weight;
 			float lastweight = 1.1f;
-			if (!firstPass) { lastweight = visualiser->getConnectionWeight(layer, from, to, weight); }
+			if (!firstPass) { lastweight = visualiser->getConnectionWeight(layer, from, to); }
 			visualiser->updateConnection(layer, from, to, weight);
 		}
 		});
@@ -82,6 +82,8 @@ int NetworkVisualiserInterface::startTraining(int inputSize) {
 	int maxEpochs = 0;
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
+		stats.load()->get()->resetEpoch();
+		stats.load()->get()->resetInput();
 		maxEpochs = stats.load()->get()->getMaxEpochs();
 		stats.load()->get()->setTotalInputs(inputSize);
 	}
@@ -133,6 +135,13 @@ void NetworkVisualiserInterface::updateAccuracyStatistic(float accuracy) {
 	}
 }
 
+void NetworkVisualiserInterface::updateReset(bool r) {
+	if (auto mtxPtr = statsMutex.load()) {
+		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
+		stats.load()->get()->setReset(r);
+	}
+}
+
 std::shared_ptr<InputDataManager> NetworkVisualiserInterface::getInputDataManager() {
 	return stats.load()->get()->getInputDataManager();
 }
@@ -159,6 +168,10 @@ float NetworkVisualiserInterface::getAverageEpochTime() {
 float NetworkVisualiserInterface::getTestAccuracy() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getTestAccuracy();
+}
+bool NetworkVisualiserInterface::getReset() {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	return stats.load()->get()->getReset();
 }
 
 void NetworkVisualiserInterface::invertNeuralNetworkRunning() {

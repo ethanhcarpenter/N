@@ -45,7 +45,7 @@ float Activations::derive(std::string type, float x) {
 		{"tanh", deriveTanh},
 		{"relu", deriveRelu},
 		{"leakyrelu", deriveLeakyrelu},
-		{"linear", deriveLinear}
+		{"linear", deriveLinear},
 	};
 
 	auto it = derivatives.find(type);
@@ -58,7 +58,7 @@ float Activations::deriveLeakyrelu(float x) {
 	return x > 0.0f ? 1.0f : 0.01f;
 }
 float Activations::deriveLinear(float x) {
-	return 1.0f;
+	return x/x;
 }
 float Activations::deriveSigmoid(float x) {
 	return x * (1.0f - x);
