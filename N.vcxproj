@@ -243,6 +243,17 @@
     <Text Include="data\txtImages\data2828.txt" />
     <Text Include="data\txtImages\data77.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="libs\glfw3\vs22\Debug\glfw3.pdb" />
+    <None Include="libs\glfw3\vs22\glfw3.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libs\glfw3\vs22\Debug\glfw3.lib" />
+    <Library Include="libs\glfw3\vs22\glfw3.lib" />
+    <Library Include="libs\glfw3\vs22\glfw3dll.lib" />
+    <Library Include="libs\glfw3\vs22\glfw3_mt.lib" />
+    <Library Include="libs\glfw3\vs22\Release\glfw3.lib" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
