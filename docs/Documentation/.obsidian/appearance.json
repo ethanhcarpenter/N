@@ -1,3 +1,10 @@
 {
-  "showRibbon": false
+  "showRibbon": false,
+  "cssTheme": "Royal Velvet",
+  "accentColor": "#d7197e",
+  "theme": "obsidian",
+  "interfaceFontFamily": "Cascadia Mono",
+  "textFontFamily": "Cascadia Mono",
+  "baseFontSize": 16,
+  "baseFontSizeAction": true
 }

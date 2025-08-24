@@ -59,8 +59,8 @@ void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth
 	startingAnimation = true;
 	usableHeight = static_cast<float>(std::get<1>(windowDimensions));
 	io = ImGui::GetIO();
-	fontDefault = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 20.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
-	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/vs.ttf", 28.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
+	fontDefault = io.Fonts->AddFontFromFileTTF("libs/fonts/cascadiaMono.ttf", 20.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
+	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/cascadiaMono.ttf", 28.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
 }
 void Visualiser::postSetupLogic() {
 	generateNeuronPositions();

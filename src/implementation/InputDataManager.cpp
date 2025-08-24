@@ -7,6 +7,7 @@
 GLuint InputDataManager::loadTexture(std::string filename) {
 	int width, height, channels;
 	std::string filepath = "data/images/" + filename;
+	std::cout<< filepath <<"\n";
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 4);
 	if (!data) {
 		std::cerr << "Failed to load image: " << filename << std::endl;
@@ -72,9 +73,9 @@ void InputDataManager::drawSpecifiedInputForm() {
 }
 void InputDataManager::createSampleImageTextures() {
 	for (int i = 0; i < 10; i++) {
-		std::string filenameNumber = std::to_string(i) + "_";
+		std::string filenameNumber = std::to_string(i);
 		for (auto& quality : imageQuailities) {
-			std::string filenameQuality = filenameNumber + quality;
+			std::string filenameQuality = quality+"/"+filenameNumber;
 			std::string filename = filenameQuality + imageFormat;
 			imageTextures[filenameQuality] = (ImTextureID)(intptr_t)loadTexture(filename);
 		}
@@ -98,7 +99,7 @@ void InputDataManager::drawImages() {
 		ImGui::BeginChild(("SampleImage" + quality).c_str(), childSize, false);
 
 		ImVec2 pos = ImGui::GetCursorScreenPos();
-		ImTextureID currentImage = imageTextures[std::to_string(currentSmapleNumber) + "_" + quality];
+		ImTextureID currentImage = imageTextures[(quality + "/" + std::to_string(currentSmapleNumber))];
 
 		ImGui::Image((ImTextureID)(intptr_t)currentImage, imageSize);
 		std::string sizeString = getHalfString(quality);
@@ -150,9 +151,9 @@ void InputDataManager::createData(int trainAmount, int testAmount) {
 	if (type == "Images") {
 		inputAmount = static_cast<int>(std::powf(static_cast<float>(std::stoi(getHalfString(currentlyHighlighted))), 2.0f));
 		trainingData.setNumberOfInputs(inputAmount);
-		trainingData.generateImageDataFromTextFileRandom(("data/data" + currentlyHighlighted + ".txt").c_str(), trainAmount);
+		trainingData.generateImageDataFromTextFileRandom(("data/txtImages/data" + currentlyHighlighted + ".txt").c_str(), trainAmount);
 		testData.setNumberOfInputs(inputAmount);
-		testData.generateImageDataFromTextFileRandom(("data/data" + currentlyHighlighted + ".txt").c_str(), testAmount);
+		testData.generateImageDataFromTextFileRandom(("data/txtImages/data" + currentlyHighlighted + ".txt").c_str(), testAmount);
 
 	}
 	isDataCreated = true;

@@ -48,7 +48,131 @@ An Epoch is one complete pass of all training data through the network. A common
 
 ## Project Organisation
 
-|---- Neuron/
-|     |---- 
+<h4 style="text-align: center;">Project File Structure</h4>
 
 
+
+<pre style="
+display:flex;
+justify-content: center;
+padding-top:0px;
+padding-bottom:10px;
+">
+<div>
+Neuron
+├───data  
+│   ├───txtImages       → Text representations of images (.txt)
+│   └───images          → Actual image files (.png)
+├───docs  
+│   └───documentation   → Project documentation files
+├───libs   
+│   ├───fonts           → Font files used by the project
+│   ├───glfw3           → GLFW library (for window/input handling)
+│   ├───imgui           → ImGui library (for GUI)
+│   └───stb             → stb libraries (single-file graphics/util libs)
+├───src  
+│   ├───header          → Header files (.h)
+│   └───implementation  → Source code implementation files (.cpp)
+ 
+</div>
+</pre>
+<h4 style="text-align: center;">Folder Contents</h4>
+
+<pre style="display:flex;justify-content: center">
+<div style="margin-right:0px">
+<h3 >data</h3>
+txtImages
+├── data77.txt  
+├── data1414.txt  
+├── data2121.txt  
+└── data2828.txt   
+
+images
+├───77
+│   ├── 0.png
+│   ├── ...
+│   └── 9.png
+├───1414
+│   ├── 0.png
+│   ├── ...
+│   └── 9.png
+├───2121
+│   ├── 0.png
+│   ├── ...
+│   └── 9.png
+├───2828
+│   ├── 0.png
+│   ├── ...
+│   └── 9.png
+</div >
+<div style="margin-right:5px;margin-left:20px;">
+<h3 >libs</h3>
+fonts
+└── cascadiaMono.ttf  
+
+glfw3
+├───include
+│   ├───GLFW
+│   │   ├── glfw3.h
+│   │   └── glfw3native.h
+│   ├───GLFW
+│   │   ├───Debug
+│   │   │   ├── glfw3.lib
+│   │   │   └── glfw3.pdb
+│   │   ├───Release
+│   │   │   └── glfw3.lib
+│   │   ├── glfw3.dll
+│   │   ├── glfw3.lib
+│   │   ├── glfw3_mt.lib
+│   │   └── glfw3dll.lib
+
+imgui
+├── imconfig.h
+├── imgui.cpp
+├── imgui.h
+├── imgui_demo.cpp
+├── imgui_draw.cpp
+├── imgui_impl_glfw.cpp
+├── imgui_impl_glfw.h
+├── imgui_impl_opengl3.cpp
+├── imgui_impl_opengl3.h
+├── imgui_impl_opengl3_loader.h
+├── imgui_internal.h
+├── imgui_tables.cpp
+├── imgui_widgets.cpp
+├── imstb_rectpack.h
+├── imstb_textedit.h
+└── imstb_truetype.h
+
+</div>
+<div style="margin-right:0px">
+<h3 >src</h3>
+header
+├── Activations.h
+├── DataSet.h
+├── InputDataManager.h
+├── NetworkVisualiserInterface.h
+├── NeuralNetwork.h
+├── Statistics.h
+├── StopWatch.h
+├── Threader.h
+├── Visualiser.h
+└── VisualUpdate.h
+
+implementation
+├── Activations.cpp
+├── DataSet.cpp
+├── InputDataManager.cpp
+├── main.cpp
+├── NetworkVisualiserInterface.cpp
+├── NeuralNetwork.cpp
+├── Statistics.cpp
+├── StopWatch.cpp
+├── Threader.cpp
+├── Visualiser.cpp
+└── VisualUpdate.cpp
+
+
+</div >
+</pre>
+## Class Diagrams

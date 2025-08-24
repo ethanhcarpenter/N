@@ -14,7 +14,7 @@
 *.userprefs
 
 
-data/*.txt
+data/txtImages/*.txt
 
 # Mono auto generated files
 mono_crash.*

@@ -4,22 +4,56 @@
     "type": "split",
     "children": [
       {
-        "id": "9d8e723f6d3cfc14",
+        "id": "3665285f693f5791",
         "type": "tabs",
+        "dimension": 46.223021582733814,
         "children": [
           {
-            "id": "d14e64ccf60acbf0",
+            "id": "033bdb637083966b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Neural Network Visualisation.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
               "title": "Neural Network Visualisation"
-            }
+            },
+            "group": "628f62c335478161"
+          }
+        ]
+      },
+      {
+        "id": "d85bca8509cc65a2",
+        "type": "tabs",
+        "dimension": 53.776978417266186,
+        "children": [
+          {
+            "id": "630f32885c2034b0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Neural Network Visualisation.md",
+                "mode": "preview",
+                "source": true,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "Neural Network Visualisation"
+            },
+            "group": "628f62c335478161"
           }
         ]
       }
@@ -78,7 +112,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "right": {
     "id": "cf320aefaeac8b25",
@@ -94,6 +128,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Neural Network Visualisation.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +138,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Neural Network Visualisation"
             }
           },
           {
@@ -168,11 +203,14 @@
       "file-tree-alternative:File Tree Alternative Plugin": false
     }
   },
-  "active": "d14e64ccf60acbf0",
+  "active": "630f32885c2034b0",
   "lastOpenFiles": [
-    "Untitled.canvas",
-    "Untitled 1.canvas",
+    "Images/download.jpg",
     "Neural Network Visualisation.md",
+    "download.jpg",
+    "Untitled.canvas",
+    "Images",
+    "Untitled 1.canvas",
     "Welcome.md"
   ]
 }

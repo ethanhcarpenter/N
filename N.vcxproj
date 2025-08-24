@@ -115,7 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\header;$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -135,7 +135,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\header;$(ProjectDir)libs\glfw3\include;$(ProjectDir)libs\stb;$(ProjectDir)libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="libs\stb\stb_image.h" />
-    <ClInclude Include="src\InputDataManager.h" />
+    <ClInclude Include="src\header\InputDataManager.h" />
     <ClInclude Include="libs\glfw3\include\GLFW\glfw3.h" />
     <ClInclude Include="libs\glfw3\include\GLFW\glfw3native.h" />
     <ClInclude Include="libs\imgui\imconfig.h" />
@@ -162,18 +162,18 @@
     <ClInclude Include="libs\imgui\imstb_rectpack.h" />
     <ClInclude Include="libs\imgui\imstb_textedit.h" />
     <ClInclude Include="libs\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Activations.h" />
-    <ClInclude Include="src\DataSet.h" />
-    <ClInclude Include="src\NetworkVisualiserInterface.h" />
-    <ClInclude Include="src\NeuralNetwork.h" />
-    <ClInclude Include="src\Statistics.h" />
-    <ClInclude Include="src\StopWatch.h" />
-    <ClInclude Include="src\Threader.h" />
-    <ClInclude Include="src\Visualiser.h" />
-    <ClInclude Include="src\VisualUpdate.h" />
+    <ClInclude Include="src\header\Activations.h" />
+    <ClInclude Include="src\header\DataSet.h" />
+    <ClInclude Include="src\header\NetworkVisualiserInterface.h" />
+    <ClInclude Include="src\header\NeuralNetwork.h" />
+    <ClInclude Include="src\header\Statistics.h" />
+    <ClInclude Include="src\header\StopWatch.h" />
+    <ClInclude Include="src\header\Threader.h" />
+    <ClInclude Include="src\header\Visualiser.h" />
+    <ClInclude Include="src\header\VisualUpdate.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\InputDataManager.cpp" />
+    <ClCompile Include="src\implementation\InputDataManager.cpp" />
     <ClCompile Include="libs\imgui\imgui.cpp" />
     <ClCompile Include="libs\imgui\imgui_demo.cpp" />
     <ClCompile Include="libs\imgui\imgui_draw.cpp" />
@@ -181,66 +181,67 @@
     <ClCompile Include="libs\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="libs\imgui\imgui_tables.cpp" />
     <ClCompile Include="libs\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Activations.cpp" />
-    <ClCompile Include="src\DataSet.cpp" />
-    <ClCompile Include="src\NetworkVisualiserInterface.cpp" />
-    <ClCompile Include="src\NeuralNetwork.cpp" />
-    <ClCompile Include="src\Statistics.cpp" />
-    <ClCompile Include="src\StopWatch.cpp" />
-    <ClCompile Include="src\Threader.cpp" />
-    <ClCompile Include="src\Visualiser.cpp" />
-    <ClCompile Include="src\VisualUpdate.cpp" />
+    <ClCompile Include="src\implementation\main.cpp" />
+    <ClCompile Include="src\implementation\Activations.cpp" />
+    <ClCompile Include="src\implementation\DataSet.cpp" />
+    <ClCompile Include="src\implementation\NetworkVisualiserInterface.cpp" />
+    <ClCompile Include="src\implementation\NeuralNetwork.cpp" />
+    <ClCompile Include="src\implementation\Statistics.cpp" />
+    <ClCompile Include="src\implementation\StopWatch.cpp" />
+    <ClCompile Include="src\implementation\Threader.cpp" />
+    <ClCompile Include="src\implementation\Visualiser.cpp" />
+    <ClCompile Include="src\implementation\VisualUpdate.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="libs\fonts\vs.ttf" />
+    <Font Include="libs\fonts\cascadiaMono.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="data\images\0_1414.png" />
-    <Image Include="data\images\0_2121.png" />
-    <Image Include="data\images\0_2828.png" />
-    <Image Include="data\images\0_77.png" />
-    <Image Include="data\images\1_1414.png" />
-    <Image Include="data\images\1_2121.png" />
-    <Image Include="data\images\1_2828.png" />
-    <Image Include="data\images\1_77.png" />
-    <Image Include="data\images\2_1414.png" />
-    <Image Include="data\images\2_2121.png" />
-    <Image Include="data\images\2_2828.png" />
-    <Image Include="data\images\2_77.png" />
-    <Image Include="data\images\3_1414.png" />
-    <Image Include="data\images\3_2121.png" />
-    <Image Include="data\images\3_2828.png" />
-    <Image Include="data\images\3_77.png" />
-    <Image Include="data\images\4_1414.png" />
-    <Image Include="data\images\4_2121.png" />
-    <Image Include="data\images\4_2828.png" />
-    <Image Include="data\images\4_77.png" />
-    <Image Include="data\images\5_1414.png" />
-    <Image Include="data\images\5_2121.png" />
-    <Image Include="data\images\5_2828.png" />
-    <Image Include="data\images\5_77.png" />
-    <Image Include="data\images\6_1414.png" />
-    <Image Include="data\images\6_2121.png" />
-    <Image Include="data\images\6_2828.png" />
-    <Image Include="data\images\6_77.png" />
-    <Image Include="data\images\7_1414.png" />
-    <Image Include="data\images\7_2121.png" />
-    <Image Include="data\images\7_2828.png" />
-    <Image Include="data\images\7_77.png" />
-    <Image Include="data\images\8_1414.png" />
-    <Image Include="data\images\8_2121.png" />
-    <Image Include="data\images\8_2828.png" />
-    <Image Include="data\images\8_77.png" />
-    <Image Include="data\images\9_1414.png" />
-    <Image Include="data\images\9_2121.png" />
-    <Image Include="data\images\9_2828.png" />
-    <Image Include="data\images\9_77.png" />
+    <Image Include="data\images\1414\0.png" />
+    <Image Include="data\images\2121\0.png" />
+    <Image Include="data\images\2828\0.png" />
+    <Image Include="data\images\77\0.png" />
+    <Image Include="data\images\1414\1.png" />
+    <Image Include="data\images\2121\1.png" />
+    <Image Include="data\images\2828\1.png" />
+    <Image Include="data\images\77\1.png" />
+    <Image Include="data\images\1414\2.png" />
+    <Image Include="data\images\2121\2.png" />
+    <Image Include="data\images\2828\2.png" />
+    <Image Include="data\images\77\2.png" />
+    <Image Include="data\images\1414\3.png" />
+    <Image Include="data\images\2121\3.png" />
+    <Image Include="data\images\2828\3.png" />
+    <Image Include="data\images\77\3.png" />
+    <Image Include="data\images\1414\4.png" />
+    <Image Include="data\images\2121\4.png" />
+    <Image Include="data\images\2828\4.png" />
+    <Image Include="data\images\77\4.png" />
+    <Image Include="data\images\1414\5.png" />
+    <Image Include="data\images\2121\5.png" />
+    <Image Include="data\images\2828\5.png" />
+    <Image Include="data\images\77\5.png" />
+    <Image Include="data\images\1414\6.png" />
+    <Image Include="data\images\2121\6.png" />
+    <Image Include="data\images\2828\6.png" />
+    <Image Include="data\images\77\6.png" />
+    <Image Include="data\images\1414\7.png" />
+    <Image Include="data\images\2121\7.png" />
+    <Image Include="data\images\2828\7.png" />
+    <Image Include="data\images\77\7.png" />
+    <Image Include="data\images\1414\8.png" />
+    <Image Include="data\images\2121\8.png" />
+    <Image Include="data\images\2828\8.png" />
+    <Image Include="data\images\77\8.png" />
+    <Image Include="data\images\1414\9.png" />
+    <Image Include="data\images\2121\9.png" />
+    <Image Include="data\images\2828\9.png" />
+    <Image Include="data\images\77\9.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="data\data1414.txt" />
-    <Text Include="data\data2828.txt" />
-    <Text Include="data\data77.txt" />
+    <Text Include="data\txtImages\data1414.txt" />
+    <Text Include="data\txtImages\data2121.txt" />
+    <Text Include="data\txtImages\data2828.txt" />
+    <Text Include="data\txtImages\data77.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
