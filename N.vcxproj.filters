@@ -293,6 +293,8 @@
     <Text Include="data\txtImages\data2828.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="data\txtImages\data2121.txt" />
+    <Text Include="data\txtImages\data2121.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
