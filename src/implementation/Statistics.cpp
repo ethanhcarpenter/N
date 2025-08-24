@@ -31,6 +31,10 @@ int Statistics::getTotalInputs() {
 	std::lock_guard<std::mutex> lock(mtx);
 	return totalInputs;
 }
+int Statistics::getBatchSize() {
+	std::lock_guard<std::mutex> lock(mtx);
+	return batchSize;
+}
 void Statistics::resetInput() {
 	std::lock_guard<std::mutex> lock(mtx);
 	inputCount = 0;
@@ -87,6 +91,10 @@ std::shared_ptr<InputDataManager> Statistics::getInputDataManager() {
 void Statistics::setTotalInputs(int ti) {
 	std::lock_guard<std::mutex> lock(mtx);
 	totalInputs = ti;
+}
+void Statistics::setBatchSize(int bs) {
+	std::lock_guard<std::mutex> lock(mtx);
+	batchSize = bs;
 }
 void Statistics::setActivationType(std::string at) {
 	std::lock_guard<std::mutex> lock(mtx);

@@ -17,6 +17,7 @@ private:
 	std::mutex mtx;
 	std::atomic<int> maxEpochs{ 0 };
 	std::atomic<int> epochCount{ 0 };
+	std::atomic<int> batchSize{ 1 };
 	std::atomic<std::vector<float>*> epochTimes{ new std::vector<float> };
 	std::atomic<int> inputCount{ 0 };
 	std::atomic<int> totalInputs{ 0 };
@@ -55,12 +56,14 @@ public:
 	std::string getActivationType();
 	float getAverageEpochTime();
 	bool getReset();
+	int getBatchSize();
 	float getLastEpochTime();
 	float getTestAccuracy();
 	void setTestAccuracy(float a);
 	void setReset(bool r);
 	void setRunning(bool r);
 	bool getRunning();
+	void setBatchSize(int bs);
 	void setWeights(std::vector<std::vector<std::vector<float>>> w);
 	std::vector<std::vector<std::vector<float>>> getWeights();
 	void setMaxEpochs(int e);

@@ -87,7 +87,7 @@ public:
 	void drawNeuralNetwork(int winWidth, int winHeight);
 	void drawConsole();
 	std::vector<int> drawLayerInputs();
-	std::tuple<int, float> drawNumericInputs();
+	std::tuple<int, int, float> drawNumericInputs();
 	std::tuple<int, int> drawDataInputs();
 	std::string drawActivationInput();
 	bool drawButton(ButtonStyle defaultStyle, ButtonStyle constantPressedStyle = {}, bool lock = false);

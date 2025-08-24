@@ -319,7 +319,7 @@ void Visualiser::drawConsole() {
 
 	if (isNNRunning) { ImGui::BeginDisabled(); }
 
-	std::tuple<int, float> numericInputs = drawNumericInputs();
+	std::tuple<int,int, float> numericInputs = drawNumericInputs();
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	std::string activation = drawActivationInput();
@@ -469,15 +469,17 @@ std::tuple<int, int> Visualiser::drawDataInputs() {
 	ImGui::EndChild();
 	return std::make_tuple(trainAmount, testAmount);
 }
-std::tuple<int, float> Visualiser::drawNumericInputs() {
+std::tuple<int,int, float> Visualiser::drawNumericInputs() {
 	ImGui::Text("Training Parameters");
 	ImGui::BeginChild("TrainingParams", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
 	static int epochs = 100;
 	static float learningRate = 0.005f;
+	static int batchSize = 10;
+	ImGui::InputInt("Batch Size", &batchSize, 1, 10);
 	ImGui::InputInt("Maximum Epochs", &epochs, 10, 100);
 	ImGui::InputFloat("Learning Rate", &learningRate, 0.001f, 0.01f, "%.5f");
 	ImGui::EndChild();
-	return std::make_tuple(epochs, learningRate);
+	return std::make_tuple(batchSize,epochs, learningRate);
 }
 std::string Visualiser::drawActivationInput() {
 	ImGui::Text("Activation Function");

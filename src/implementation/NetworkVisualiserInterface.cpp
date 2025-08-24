@@ -153,6 +153,10 @@ int NetworkVisualiserInterface::getCurrentEpoch() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getEpoch();
 }
+int NetworkVisualiserInterface::getBatchSize() {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	return stats.load()->get()->getBatchSize();
+}
 int NetworkVisualiserInterface::getTotalInputs() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getTotalInputs();
@@ -180,12 +184,13 @@ void NetworkVisualiserInterface::invertNeuralNetworkRunning() {
 }
 
 
-void NetworkVisualiserInterface::updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at, bool cls) {
+void NetworkVisualiserInterface::updateStats(std::vector<int> ls, std::tuple<int, int, float> ni, std::string at, bool cls) {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	auto& s = *stats.load()->get();
 	s.setLayerSizes(ls);
-	s.setMaxEpochs(get<0>(ni));
-	s.setLearningRate(get<1>(ni));
+	s.setBatchSize(get<0>(ni));
+	s.setMaxEpochs(get<1>(ni));
+	s.setLearningRate(get<2>(ni));
 	s.setActivationType(at);
 	if (!cls) { s.setIsVisualiserSetup(true); }
 	if (cls) { s.setNeuralNetworkNeedsUpdating(true); }

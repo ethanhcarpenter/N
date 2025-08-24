@@ -44,6 +44,7 @@ public:
 	void updateReset(bool r);
 	int getCurrentInput();
 	int getCurrentEpoch();
+	int getBatchSize();
 	bool getReset();
 	int getTotalInputs();
 	float getLastEpochTime();
@@ -54,6 +55,6 @@ public:
 	void setInputDataManager(std::shared_ptr<InputDataManager> m);
 	std::shared_ptr<InputDataManager> getInputDataManager();
 	void invertNeuralNetworkRunning();
-	void updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at, bool cls);
+	void updateStats(std::vector<int> ls, std::tuple<int,int, float> ni, std::string at, bool cls);
 
 };
