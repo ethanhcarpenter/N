@@ -56,10 +56,10 @@ class NetworkVisualiserInterface;
 
 
 class Gradients {
+private:
+	std::vector<std::vector<std::vector<float>>> weightGradients;
+	std::vector<std::vector<float>> biasGradients;
 public:
-	std::vector<std::vector<std::vector<float>>> weightGrads;
-	std::vector<std::vector<float>> biasGrads;
-
 	Gradients(
 		std::vector<std::vector<std::vector<float>>> weights,
 		std::vector<Layer>& layers
@@ -69,6 +69,8 @@ public:
 		std::vector<Layer>& layers,
 		float learningRate, int batchSize
 	);
+	std::vector<std::vector<std::vector<float>>>& getWeightGradients();
+	std::vector<std::vector<float>>& getBiasGradients();
 	
 };
 

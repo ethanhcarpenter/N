@@ -175,7 +175,6 @@ void Visualiser::drawConnections() {
 	}
 	glLineWidth(1.0f);
 }
-std::vector<Connection>& Visualiser::getConnections() { return connections; }
 std::tuple<float, float, float, float> Visualiser::generateColour(float weight) {
 	float opacity = std::min(1.0f, abs(weight));
 	if (weight < 0) {

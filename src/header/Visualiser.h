@@ -75,7 +75,6 @@ public:
 	std::tuple<float, float, float, float> generateColour(float weight);
 	void drawConnections();
 	void terminate();
-	std::vector<Connection>& getConnections();
 	GLFWwindow* getWindow();
 	void addConnectionIndex(int fromLayer, int from, int to);
 	std::string generateConnectionUID(int fromLayer, int from, int to);

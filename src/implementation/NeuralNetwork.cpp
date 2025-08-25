@@ -314,11 +314,11 @@ void NeuralNetwork::accumulateGradients(std::vector<float>& targetVals, Gradient
 		auto& to = layers[l + 1].getNodes();
 		for (size_t i = 0; i < from.size(); ++i) {
 			for (size_t j = 0; j < to.size(); ++j) {
-				grads.weightGrads[l][i][j] += deltas[l + 1][j] * from[i].getValue();
+				grads.getWeightGradients()[l][i][j] += deltas[l + 1][j] * from[i].getValue();
 			}
 		}
 		for (size_t j = 0; j < to.size(); ++j) {
-			grads.biasGrads[l + 1][j] += deltas[l + 1][j];
+			grads.getBiasGradients()[l + 1][j] += deltas[l + 1][j];
 		}
 	}
 }
@@ -329,16 +329,16 @@ Gradients::Gradients(
 	std::vector<std::vector<std::vector<float>>> weights,
 	std::vector<Layer>& layers
 ) {
-	weightGrads = std::vector<std::vector<std::vector<float>>>(
+	weightGradients = std::vector<std::vector<std::vector<float>>>(
 		weights.size());
 	for (size_t l = 0; l < weights.size(); ++l) {
-		weightGrads[l] = std::vector<std::vector<float>>(
+		weightGradients[l] = std::vector<std::vector<float>>(
 			weights[l].size(), std::vector<float>(weights[l][0].size(), 0.0f));
 	}
 
-	biasGrads = std::vector<std::vector<float>>(layers.size());
+	biasGradients = std::vector<std::vector<float>>(layers.size());
 	for (size_t l = 1; l < layers.size(); ++l) {
-		biasGrads[l] = std::vector<float>(layers[l].getSize(), 0.0f);
+		biasGradients[l] = std::vector<float>(layers[l].getSize(), 0.0f);
 	}
 }
 
@@ -349,14 +349,21 @@ void Gradients::apply(std::vector<std::vector<std::vector<float>>>& weights,
 	for (size_t l = 0; l < weights.size(); ++l) {
 		for (size_t i = 0; i < weights[l].size(); ++i) {
 			for (size_t j = 0; j < weights[l][i].size(); ++j) {
-				weights[l][i][j] += (learningRate / batchSize) * weightGrads[l][i][j];
+				weights[l][i][j] += (learningRate / batchSize) * weightGradients[l][i][j];
 			}
 		}
 	}
 
 	for (size_t l = 1; l < layers.size(); ++l) {
 		for (size_t j = 0; j < layers[l].getSize(); ++j) {
-			layers[l].getNodes()[j].setBias(layers[l].getNodes()[j].getBias() + (learningRate / batchSize) * biasGrads[l][j]);
+			layers[l].getNodes()[j].setBias(layers[l].getNodes()[j].getBias() + (learningRate / batchSize) * biasGradients[l][j]);
 		}
 	}
+}
+
+std::vector<std::vector<float>>& Gradients::getBiasGradients() {
+	return biasGradients;
+}
+std::vector<std::vector<std::vector<float>>>& Gradients::getWeightGradients() {
+	return weightGradients;
 }
