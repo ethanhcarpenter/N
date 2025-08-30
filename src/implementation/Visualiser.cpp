@@ -61,20 +61,26 @@ void Visualiser::setup(const char* name, int targetMonitorIndex, int windowWidth
 	io = ImGui::GetIO();
 	fontDefault = io.Fonts->AddFontFromFileTTF("libs/fonts/cascadiaMono.ttf", 20.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
 	fontLarge = io.Fonts->AddFontFromFileTTF("libs/fonts/cascadiaMono.ttf", 28.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
+	setupPixelCanvas();
+}
+void Visualiser::setupPixelCanvas() {
+	pixelCanvasStats.hardness = 0.0f;
+	pixelCanvasStats.radius = 1;
 }
 void Visualiser::postSetupLogic() {
 	generateNeuronPositions();
 	neuronRadius = calculateNeuronRadius(usableHeight, 0.01f);
 	calculateConnectionCount();
 }
-
+PixelCanvasStats Visualiser::pixelCanvasStats;
+UserImageTestResults Visualiser::userImageTestResults;
 const bool Visualiser::isSettingUp() { return !isSetup; }
 GLFWwindow* Visualiser::getWindow() { return window; }
 void Visualiser::terminate() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
-
+	networkInterface->setShouldCloseNetwork(true);
 	glfwSetWindowShouldClose(window, true);
 	glfwWindowShouldClose(window);
 	glfwTerminate();
@@ -253,7 +259,7 @@ void Visualiser::drawNeuralNetwork(int winWidth, int winHeight) {
 void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 	ImGui::PushFont(fontDefault);
 	ImGui::SetNextWindowPos(ImVec2(winWidth - 320.0f, winHeight - usableHeight), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(300, 250), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(300, 280), ImGuiCond_Always);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
@@ -288,7 +294,24 @@ void Visualiser::drawImGuiBriefNNStats(int winWidth, int winHeight) {
 			ImVec4(0.3f, 0.9f, 0.3f, 1.0f),
 			ImVec4(0.1f, 0.7f, 0.1f, 1.0f),
 		}, networkInterface->isNeuralNetworkRunning());
-	if (stopTrainingPressed) { toggleTraining(); }
+
+	bool startTesting = drawButton(
+		ButtonStyle{
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
+			"Test Network",
+			ImVec4(0.8f, 0.2f, 0.2f, 1.0f),
+			ImVec4(0.9f, 0.3f, 0.3f, 1.0f),
+			ImVec4(0.7f, 0.1f, 0.1f, 1.0f),
+		});
+	if (startTesting) {
+		activeTab = "drawer";
+		std::string imageQaulity = networkInterface->getInputDataManager()->getImageQuality();
+		int width = std::stoi(imageQaulity.substr(0, imageQaulity.size() / 2));
+		int height = std::stoi(imageQaulity.substr(imageQaulity.size() / 2));
+		pixelCanvas.setup(width, height);
+
+	}
+	else if (stopTrainingPressed) { toggleTraining(); }
 
 	ImGui::End();
 
@@ -318,7 +341,7 @@ void Visualiser::drawConsole() {
 
 	if (isNNRunning) { ImGui::BeginDisabled(); }
 
-	std::tuple<int,int, float> numericInputs = drawNumericInputs();
+	std::tuple<int, int, float> numericInputs = drawNumericInputs();
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 	std::string activation = drawActivationInput();
@@ -468,7 +491,7 @@ std::tuple<int, int> Visualiser::drawDataInputs() {
 	ImGui::EndChild();
 	return std::make_tuple(trainAmount, testAmount);
 }
-std::tuple<int,int, float> Visualiser::drawNumericInputs() {
+std::tuple<int, int, float> Visualiser::drawNumericInputs() {
 	ImGui::Text("Training Parameters");
 	ImGui::BeginChild("TrainingParams", ImVec2(0, 150), true, ImGuiWindowFlags_AlwaysUseWindowPadding);
 	static int epochs = 100;
@@ -478,7 +501,7 @@ std::tuple<int,int, float> Visualiser::drawNumericInputs() {
 	ImGui::InputInt("Maximum Epochs", &epochs, 10, 100);
 	ImGui::InputFloat("Learning Rate", &learningRate, 0.001f, 0.01f, "%.5f");
 	ImGui::EndChild();
-	return std::make_tuple(batchSize,epochs, learningRate);
+	return std::make_tuple(batchSize, epochs, learningRate);
 }
 std::string Visualiser::drawActivationInput() {
 	ImGui::Text("Activation Function");
@@ -490,6 +513,262 @@ std::string Visualiser::drawActivationInput() {
 	return activations[activationType];
 }
 #pragma endregion
+
+
+
+#pragma region Image-Drawer
+void Visualiser::drawImageDrawer() {
+
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->Pos);
+	ImGui::SetNextWindowSize(viewport->Size);
+
+	ImGui::Begin("CanvasWindow", nullptr,
+		ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing);
+
+	float canvasSize = viewport->Size.y;
+	ImGui::BeginChild("CanvasPanel", ImVec2(canvasSize, canvasSize), false,
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar);
+
+	pixelCanvas.updateStats(pixelCanvasStats);
+	pixelCanvas.draw("CanvasChild", canvasSize, canvasSize);
+	ImGui::EndChild();
+
+	ImGui::SameLine();
+	//ImGui::Text("Training Parameters");
+	ImGui::BeginChild("RightPanel", ImVec2(viewport->Size.x - viewport->Size.y - 20.0f, viewport->Size.y - 10.0f), true);
+	bool clear = drawButton(
+		ButtonStyle{
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
+			"Clear Canvas",
+			ImVec4(0.8f, 0.2f, 0.2f, 1.0f),
+			ImVec4(0.9f, 0.3f, 0.3f, 1.0f),
+			ImVec4(0.7f, 0.1f, 0.1f, 1.0f),
+		});
+
+	ImGui::InputInt("Brush radius", &pixelCanvasStats.radius, 1, 10);
+	ImGui::InputFloat("Bursh Hardness", &pixelCanvasStats.hardness, 0.1f, 0.5f);
+	bool test = drawButton(
+		ButtonStyle{
+			ImVec2(ImGui::GetContentRegionAvail().x, 50),
+			"Test Image",
+			ImVec4(0.5f, 0.2f, 0.7f, 1.0f),
+			ImVec4(0.6f, 0.3f, 0.8f, 1.0f),
+			ImVec4(0.4f, 0.1f, 0.6f, 1.0f)
+		});
+	ImGui::Dummy(ImVec2(100.0f, 0.0f));
+	ImGui::SameLine();
+	generateUserDrawnOutput(test, ImVec2(viewport->Size.x - viewport->Size.y - 190.0f - 20.0f, 700));
+	if (clear) { pixelCanvas.resetCanvas(); }
+	ImGui::EndChild();
+
+
+
+	ImGui::End();
+
+}
+void PixelCanvas::updateStats(PixelCanvasStats& pcs) {
+	stats.hardness = pcs.hardness;
+	stats.radius = pcs.radius;
+}
+void PixelCanvas::resetCanvas() {
+	for (auto& c : pixels) {
+		c = IM_COL32(0, 0, 0, 255);
+	}
+}
+void PixelCanvas::setup(int w, int h) {
+	width = w;
+	height = h;
+	pixels = std::vector<ImU32>(static_cast<size_t>(width * height), IM_COL32(0, 0, 0, 255));
+
+}//do this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ImU32 PixelCanvas::blendColor(ImU32 dst, ImU32 src) {
+	float da = ((dst >> IM_COL32_A_SHIFT) & 0xFF) / 255.0f;
+	float dr = ((dst >> IM_COL32_R_SHIFT) & 0xFF) / 255.0f;
+	float dg = ((dst >> IM_COL32_G_SHIFT) & 0xFF) / 255.0f;
+	float db = ((dst >> IM_COL32_B_SHIFT) & 0xFF) / 255.0f;
+
+	float sa = ((src >> IM_COL32_A_SHIFT) & 0xFF) / 255.0f;
+	float sr = ((src >> IM_COL32_R_SHIFT) & 0xFF) / 255.0f;
+	float sg = ((src >> IM_COL32_G_SHIFT) & 0xFF) / 255.0f;
+	float sb = ((src >> IM_COL32_B_SHIFT) & 0xFF) / 255.0f;
+
+	float outA = sa + da * (1.0f - sa);
+	if (outA <= 1e-6f) return 0;
+	float outR = (sr * sa + dr * da * (1.0f - sa)) / outA;
+	float outG = (sg * sa + dg * da * (1.0f - sa)) / outA;
+	float outB = (sb * sa + db * da * (1.0f - sa)) / outA;
+
+	return IM_COL32(int(outR * 255.0f), int(outG * 255.0f), int(outB * 255.0f), int(outA * 255.0f));
+}
+ImU32 PixelCanvas::setAlpha(ImU32 c, int a) {
+	return (c & ~IM_COL32_A_MASK) | (ImU32(a) << IM_COL32_A_SHIFT);
+}
+void PixelCanvas::applyBrush(int cx, int cy, bool leftClick) {
+	ImU32 baseInk = IM_COL32(255, 255, 255, 20);
+	ImU32 baseEraser = IM_COL32(0, 0, 0, 255);
+
+	const int r = stats.radius;
+	const float rInv = 1.0f / std::max(1, r);
+
+	for (int oy = -r; oy <= r; ++oy) {
+		for (int ox = -r; ox <= r; ++ox) {
+			int px = cx + ox, py = cy + oy;
+			if (px < 0 || py < 0 || px >= width || py >= height) continue;
+
+			float d = std::sqrt(float(ox * ox + oy * oy));
+			if (d > r + 0.5f) continue;
+
+			float t = 1.0f - (d * rInv);
+			t = std::clamp(t, 0.0f, 1.0f);
+			float k = (stats.hardness <= 0.0f) ? t : std::pow(t, 1.0f / std::max(1e-3f, 1.0f - stats.hardness));
+
+			int idx = py * width + px;
+
+			ImU32 base = leftClick ? baseInk : baseEraser;
+			int baseA = (base >> IM_COL32_A_SHIFT) & 0xFF;
+			int scaledA = (int)std::round(baseA * k);
+			if (scaledA <= 0) continue;
+
+			ImU32 src = setAlpha(base, scaledA);
+			pixels[idx] = blendColor(pixels[idx], src);
+		}
+	}
+}
+void PixelCanvas::draw(const char* label, float canvasW, float canvasH) {
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	ImGui::BeginChild(label, ImVec2(canvasW, canvasH), false,
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollbar);
+
+	ImGui::SetCursorPos(ImVec2(0, 0));
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	float cellSize = std::min(canvasW / width, canvasH / height);
+
+	auto* drawList = ImGui::GetWindowDrawList();
+
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			int idx = y * width + x;
+			ImU32 col = pixels[idx];
+
+			ImVec2 cellMin = ImVec2(
+				std::round(pos.x + x * cellSize),
+				std::round(pos.y + y * cellSize)
+			);
+			ImVec2 cellMax = ImVec2(
+				std::round(pos.x + (x + 1) * cellSize),
+				std::round(pos.y + (y + 1) * cellSize)
+			);
+
+			drawList->AddRectFilled(cellMin, cellMax, col);
+
+			if (ImGui::IsMouseHoveringRect(cellMin, cellMax)) {
+				if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+					applyBrush(x, y, true);
+				if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
+					applyBrush(x, y, false);
+			}
+		}
+	}
+
+	ImGui::EndChild();
+	ImGui::PopStyleVar();
+}
+const std::vector<ImU32>& PixelCanvas::getPixels() const { return  pixels; }
+int PixelCanvas::getWidth() const { return width; }
+int PixelCanvas::getHeight() const { return height; }
+void Visualiser::drawOutputs(std::vector<float> values, ImVec2 size) {
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	ImVec2 avail = size;
+
+	auto* drawList = ImGui::GetWindowDrawList();
+	float barHeight = avail.y / values.size();
+	float labelOffsetX = -40.0f;
+
+
+	float sum = std::accumulate(values.begin(), values.end(), 0.0f);
+	if (sum < 1e-6f) sum = 1.0f;
+
+
+	for (int i = 0; i < values.size(); i++) {
+		float p = values[i] / sum;
+
+		ImVec2 barMin = ImVec2(pos.x, pos.y + i * barHeight);
+		ImVec2 filledMax = ImVec2(pos.x + p * avail.x, pos.y + (i + 1) * barHeight - 2);
+		ImVec2 fullBarMax = ImVec2(pos.x + avail.x, pos.y + (i + 1) * barHeight - 2);
+
+		ImU32 col = IM_COL32(
+			100 + int(155 * p),
+			50 + int(150 * p),
+			200,
+			255
+		);
+		drawList->AddRectFilled(barMin, filledMax, col, 4.0f);
+
+		drawList->AddRect(barMin, fullBarMax, IM_COL32(100, 100, 100, 255));
+
+		std::string label = std::to_string(i);
+		ImVec2 labelPos = ImVec2(barMin.x + labelOffsetX, barMin.y + barHeight * 0.25f);
+		drawList->AddText(fontLarge, 14.0f, labelPos, IM_COL32(255, 255, 255, 255), label.c_str());
+
+		std::string valueLabel = std::to_string(values[i]);
+		ImVec2 textSize = ImGui::CalcTextSize(valueLabel.c_str());
+		ImVec2 valuePos = ImVec2(
+			barMin.x + (avail.x - textSize.x) * 0.5f,
+			barMin.y + (barHeight - textSize.y) * 0.5f
+		);
+		drawList->AddText(fontLarge, 14.0f, valuePos, IM_COL32(255, 255, 255, 255), valueLabel.c_str());
+	}
+
+	ImGui::Dummy(avail); 
+}
+
+void Visualiser::generateUserDrawnOutput(bool t, ImVec2 size) {
+	if (userImageTestResults.outputs.size() > 0) {
+		drawOutputs(userImageTestResults.outputs, size);
+		//size_t predictedClass = std::distance(userImageTestResults.outputs.begin(), std::max_element(userImageTestResults.outputs.begin(), userImageTestResults.outputs.end()));
+		
+	}
+	if (t) {
+		NeuralNetwork n;
+		std::vector<float> inputs = convertColourToNNFormat();
+		auto userImageLayers = networkInterface->getLayers();
+		n.visualiserFeedforward(
+			inputs,
+			userImageLayers,
+			networkInterface->getWeights(),
+			networkInterface->getActivationType()
+		);
+		userImageTestResults.outputs = n.getOutputs(userImageLayers);
+		
+		userImageTestResults.pixels = pixelCanvas.getPixels();
+	}
+	//std::cout << networkInterface->getTestAccuracy() << "\n";
+
+
+}
+std::vector<float> Visualiser::convertColourToNNFormat() {
+	std::vector<float> result;
+	result.reserve(pixelCanvas.getPixels().size());
+
+	for (ImU32 c : pixelCanvas.getPixels()) {
+		// Extract channels (ImU32 is ABGR)
+		int r = (c >> IM_COL32_R_SHIFT) & 0xFF;
+		int g = (c >> IM_COL32_G_SHIFT) & 0xFF;
+		int b = (c >> IM_COL32_B_SHIFT) & 0xFF;
+
+		// Normalize to [0,1] grayscale
+		float gray = (0.299f * r + 0.587f * g + 0.114f * b) / 255.0f;
+
+		result.push_back(gray);
+	}
+	return result;
+}
+
+#pragma endregion
+
 
 
 
@@ -521,12 +800,14 @@ void Visualiser::mainLoop() {
 		ImGui::SetNextWindowSize(ImVec2(static_cast<float>(winWidth), static_cast<float>(winHeight)));
 		if (ImGui::Begin("Main Tabs", nullptr, windowFlags | ImGuiWindowFlags_NoBackground)) {
 
-			// Render content directly based on activeTab
 			if (activeTab == "console") {
 				drawConsole();
 			}
 			else if (activeTab == "nn") {
 				drawNeuralNetwork(winWidth, winHeight);
+			}
+			else if (activeTab == "drawer") {
+				drawImageDrawer();
 			}
 
 			ImGui::End();

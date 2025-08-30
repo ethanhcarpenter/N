@@ -45,7 +45,8 @@ void Node::setBias(float b) { bias = b; }
 #pragma region Layer-Class
 
 #pragma region Initialise
-Layer::Layer(int size, NodeType type) {
+Layer::Layer() {}
+void Layer::setup(int size, NodeType type) {
 	for (int i = 0; i < size; ++i)
 		nodes.emplace_back(type);
 }
@@ -74,16 +75,21 @@ void NeuralNetwork::setup(std::shared_ptr<NetworkVisualiserInterface> vi) {
 	learningRate = std::get<1>(initialInputs);
 	layerSizes = std::get<2>(initialInputs);
 
-	int index = 0;
-	for (int size : layerSizes) {
-		NodeType type = (index == 0 ? NodeType::Input :
-			(index == layerSizes.size() - 1 ? NodeType::Output : NodeType::Hidden));
-		layers.emplace_back(size, type);
-		index++;
-	}
+	createLayers(layerSizes);
 
 	visualiserInterface->initialiseWorkerThread();
 
+}
+void NeuralNetwork::createLayers(std::vector<int>& ls) {
+	int index = 0;
+	for (int size : ls) {
+		NodeType type = (index == 0 ? NodeType::Input :
+			(index == ls.size() - 1 ? NodeType::Output : NodeType::Hidden));
+		Layer l;
+		l.setup(size, type);
+		layers.emplace_back(l);
+		index++;
+	}
 }
 void NeuralNetwork::initWeights() {
 	weights.clear();
@@ -146,6 +152,34 @@ void NeuralNetwork::feedforward(std::vector<float>& inputVals, bool firstPass, b
 
 	visualiserInterface->updateConnections(updates, firstPass);
 }
+
+void NeuralNetwork::visualiserFeedforward(std::vector<float> inputVals,std::vector<Layer>& networkLayers, std::vector<std::vector<std::vector<float>>> networkWeights,std::string at) {
+	auto& inputLayer = networkLayers[0].getNodes();
+	for (int i = 0; i < inputVals.size(); ++i) { inputLayer[i].setValue(inputVals[i]); }
+	
+	for (size_t l = 1; l < networkLayers.size(); ++l) {
+		auto& prev = networkLayers[l - 1].getNodes();
+		auto& curr = networkLayers[l].getNodes();
+		std::vector<float> sums(curr.size());
+
+
+		for (size_t j = 0; j < curr.size(); ++j) {
+			float sum = curr[j].getBias();
+			for (size_t i = 0; i < prev.size(); ++i) {
+				sum += prev[i].getValue() * networkWeights[l - 1][i][j];
+			}
+			sums[j] = sum;
+		}
+
+		for (size_t j = 0; j < curr.size(); ++j) {
+			sums[j] = Activations::activate(at, sums[j]);
+		}
+
+		for (size_t j = 0; j < curr.size(); ++j)
+			curr[j].setValue(sums[j]);
+	}
+}
+
 void NeuralNetwork::backpropagate(std::vector<float>& targetVals) {
 	std::vector<std::vector<float>> deltas(layers.size());
 
@@ -233,7 +267,6 @@ void NeuralNetwork::train() {
 			feedforward(inputVals, epoch == 0, true);
 			accumulateGradients(expectedOutputs[i], grads);
 			int batchSize = visualiserInterface->getBatchSize();
-			std::cout<< batchSize <<"\n";
 			if ((i + 1) % batchSize == 0 || i == inputSize - 1) {
 				grads.apply(weights, layers, learningRate, batchSize);
 				grads = Gradients(weights, layers);
@@ -243,6 +276,7 @@ void NeuralNetwork::train() {
 
 			visualiserInterface->updateInputStatistic();
 			visualiserInterface->updateWeightStatistic(weights);
+			visualiserInterface->updateLayersStatistic(layers);
 		}
 
 		visualiserInterface->updateEpochStatistic(stopwatch);
@@ -251,6 +285,21 @@ void NeuralNetwork::train() {
 }
 #pragma endregion
 
+
+void NeuralNetwork::testing() {
+	test();
+	while(visualiserInterface->getShouldCloseNetwork()==0){
+		
+	}
+}
+
+std::vector<float> NeuralNetwork::getOutputs(std::vector<Layer>& l) {
+	std::vector<float> outputs;
+	for (auto& n : l.back().getNodes()) {
+		outputs.push_back(n.getValue());
+	}
+	return outputs;
+}
 
 
 #pragma region Test

@@ -7,7 +7,6 @@
 GLuint InputDataManager::loadTexture(std::string filename) {
 	int width, height, channels;
 	std::string filepath = "data/images/" + filename;
-	std::cout<< filepath <<"\n";
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 4);
 	if (!data) {
 		std::cerr << "Failed to load image: " << filename << std::endl;
@@ -82,6 +81,9 @@ void InputDataManager::createSampleImageTextures() {
 	}
 }
 
+std::string InputDataManager::getImageQuality() {
+	return currentlyHighlighted;
+}
 void InputDataManager::drawImages() {
 	ImGui::Text("Pick A Resolution");
 	float totalWidth = ImGui::GetContentRegionAvail().x;

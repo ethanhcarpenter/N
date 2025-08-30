@@ -95,6 +95,7 @@ bool NetworkVisualiserInterface::isNeuralNetworkRunning() {
 	return stats.load()->get()->getRunning();
 }
 
+
 void NetworkVisualiserInterface::updateNeuralNetworkParametersFromVisualiser(std::function<void()> updateParameters) {
 	if (auto mtxPtr = statsMutex.load()) {
 		std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
@@ -117,6 +118,13 @@ void NetworkVisualiserInterface::updateWeightStatistic(std::vector<std::vector<s
 	if (auto mtxPtr = statsMutex.load()) {
 		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
 		stats.load()->get()->setWeights(weights);
+	}
+}
+
+void NetworkVisualiserInterface::updateLayersStatistic(std::vector<Layer> l) {
+	if (auto mtxPtr = statsMutex.load()) {
+		std::unique_lock<std::shared_mutex> lock(*mtxPtr->get());
+		stats.load()->get()->setLayers(l);
 	}
 }
 
@@ -149,13 +157,29 @@ int NetworkVisualiserInterface::getCurrentInput() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getInput();
 }
+bool NetworkVisualiserInterface::getShouldCloseNetwork() {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	return stats.load()->get()->getShouldCloseNetwork();
+}
 int NetworkVisualiserInterface::getCurrentEpoch() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getEpoch();
 }
+std::vector<std::vector<std::vector<float>>> NetworkVisualiserInterface::getWeights() {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	return stats.load()->get()->getWeights();
+}
+std::vector<Layer> NetworkVisualiserInterface::getLayers() {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	return stats.load()->get()->getLayers();
+}
 int NetworkVisualiserInterface::getBatchSize() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	return stats.load()->get()->getBatchSize();
+}
+std::string NetworkVisualiserInterface::getActivationType() {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	return stats.load()->get()->getActivationType();
 }
 int NetworkVisualiserInterface::getTotalInputs() {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
@@ -209,4 +233,9 @@ void NetworkVisualiserInterface::setVisualiser(std::shared_ptr<Visualiser> v) {
 void NetworkVisualiserInterface::setInputDataManager(std::shared_ptr<InputDataManager> m) {
 	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
 	stats.load()->get()->setInputDataManager(m);
+}
+
+void NetworkVisualiserInterface::setShouldCloseNetwork(bool s) {
+	std::shared_lock<std::shared_mutex> lock(*statsMutex.load()->get());
+	stats.load()->get()->setShouldCloseNetwork(s);
 }

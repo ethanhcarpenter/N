@@ -46,6 +46,9 @@ void Statistics::nextInput() {
 bool Statistics::getRunning() {
 	return running.load();
 }
+bool Statistics::getShouldCloseNetwork() {
+	return shouldCloseNetwork.load();
+}
 int Statistics::getMaxEpochs() {
 	return maxEpochs.load();
 }
@@ -60,6 +63,9 @@ std::vector<int> Statistics::getLayerSizes() {
 }
 std::vector<std::vector<std::vector<float>>> Statistics::getWeights() {
 	return *weights.load();
+}
+std::vector<Layer> Statistics::getLayers() {
+	return *layers.load();
 }
 float Statistics::getAverageEpochTime() {
 	if (epochTimes.load()->size() == 0) { return 0; }
@@ -132,12 +138,23 @@ void Statistics::setWeights(const std::vector<std::vector<std::vector<float>>> w
 		}
 	}
 }
+
+void Statistics::setLayers(std::vector<Layer> l) {
+	std::lock_guard<std::mutex> lock(mtx);
+	auto lPtr = layers.load();
+	lPtr->assign(l.begin(), l.end());
+}
+
 void Statistics::setLearningRate(float lr) {
 	learningRate = lr;
 }
 void Statistics::setNeuralNetworkNeedsUpdating(bool nnnu) {
 	std::lock_guard<std::mutex> lock(mtx);
 	neuralNetworkNeedsUpdating = nnnu;
+}
+void Statistics::setShouldCloseNetwork(bool s) {
+	std::lock_guard<std::mutex> lock(mtx);
+	shouldCloseNetwork = s;
 }
 void Statistics::setLayerSizes(std::vector<int> ls) {
 	std::lock_guard<std::mutex> lock(mtx);

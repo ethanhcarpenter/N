@@ -43,7 +43,7 @@ int main() {
 
 	n->train();
 
-	n->test();
+	n->testing();
 
 
 
