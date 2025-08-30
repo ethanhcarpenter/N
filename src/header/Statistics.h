@@ -29,8 +29,10 @@ private:
 	std::atomic<bool> reset{ false };
 	std::atomic<std::vector<int>*>layerSizes{ new std::vector<int> };
 	std::atomic<std::vector<std::vector<std::vector<float>>>*> weights{ new std::vector<std::vector<std::vector<float>>> };
+	std::atomic<std::vector<Layer>*> layers{ new std::vector<Layer>};
 	std::atomic<bool> neuralNetworkNeedsUpdating{ false };
 	std::atomic<bool> isVisualiserSetup{ false };
+	std::atomic<bool> shouldCloseNetwork{ false };
 	std::atomic <std::shared_ptr<Visualiser>> visualiser;
 	std::atomic <std::shared_ptr<NeuralNetwork>> mainNeuralNetwork;
 	std::atomic <std::shared_ptr<InputDataManager>> inputDataManager;
@@ -48,6 +50,7 @@ public:
 	void nextInput();
 	void resetInput();
 	int getEpoch();
+	bool getShouldCloseNetwork();
 	void nextEpoch(StopWatch& stopwatch);
 	void resetEpoch();
 	void setActivationType(std::string at);
@@ -64,7 +67,10 @@ public:
 	void setRunning(bool r);
 	bool getRunning();
 	void setBatchSize(int bs);
+	void setShouldCloseNetwork(bool s);
 	void setWeights(std::vector<std::vector<std::vector<float>>> w);
+	void setLayers(std::vector<Layer> l);
+	std::vector<Layer> getLayers();
 	std::vector<std::vector<std::vector<float>>> getWeights();
 	void setMaxEpochs(int e);
 	int getMaxEpochs();

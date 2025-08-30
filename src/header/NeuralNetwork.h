@@ -43,7 +43,8 @@ class Layer {
 	std::vector<Node> nodes;
 
 public:
-	Layer(int size, NodeType type);
+	Layer();
+	void setup(int size, NodeType type);
 	std::vector<Node>& getNodes();
 	int getSize();
 };
@@ -100,13 +101,22 @@ class NeuralNetwork {
 public:
 	NeuralNetwork();
 	void setup(std::shared_ptr<NetworkVisualiserInterface> vi);
+	void createLayers(std::vector<int>& ls);
 	void initWeights();
 	void feedforward(std::vector<float>& inputVals, bool firstpass = false, bool updateWeights = false);
+	//could be integerated with feedforwards but far too much hassle dealing with cases, duplication just easier
+	void visualiserFeedforward(std::vector<float> inputVals,std::vector<Layer>& networkLayers,std::vector<std::vector<std::vector<float>>> networkWeights,std::string at);
+	std::vector<float> getOutputs(std::vector<Layer>& l);
 	void backpropagate(std::vector<float>& targetVals);
-	std::vector<float> getPredictedOutput();
 	std::vector<std::vector<std::vector<float>>>& getWeights();
 	void train();
+	void testing();
+
+
 	void test();
+	std::vector<float> getPredictedOutput();
+
+
 	void updateParameters();
 	void shutdown();
 	void accumulateGradients(std::vector<float>& targetVals, Gradients& grads);

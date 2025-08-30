@@ -7,6 +7,7 @@
 #include <atomic>
 #include <string>
 #include <memory>
+#include <numeric>
 #include <vector>
 #include <unordered_map>
 #include <shared_mutex>
@@ -40,10 +41,43 @@ struct ButtonStyle {
 	ImVec4 activeColour;
 };
 
+struct PixelCanvasStats {
+	int radius;
+	float hardness;
+};
+
+
+class PixelCanvas {
+private:
+	int width, height;
+	std::vector<ImU32> pixels;
+	PixelCanvasStats stats;
+	ImU32 setAlpha(ImU32 c, int a);
+	void applyBrush(int cx, int cy, bool leftClick);
+
+public:
+	void updateStats(PixelCanvasStats& pcs);
+	void setup(int w, int h );
+	void resetCanvas();
+	ImU32 blendColor(ImU32 dst, ImU32 src);
+	void draw(const char* label, float canvasW, float canvasH);
+	const std::vector<ImU32>& getPixels() const;
+	int getWidth() const;
+	int getHeight() const;
+};
+
+struct UserImageTestResults {
+	std::vector<ImU32> pixels;
+	std::vector<float> outputs;
+};
+
+
 class Visualiser {
 private:
 	std::shared_ptr<NetworkVisualiserInterface> networkInterface;
-
+	static PixelCanvasStats pixelCanvasStats;
+	static UserImageTestResults userImageTestResults;
+	PixelCanvas pixelCanvas;
 	GLFWmonitor* targetMonitor;
 	const GLFWvidmode* mode;
 	GLFWwindow* window;
@@ -67,6 +101,7 @@ private:
 	bool confirmedLayerSizes;
 public:
 	Visualiser(std::shared_ptr<NetworkVisualiserInterface> ni);
+	void setupPixelCanvas();
 	void setup(const char* name, int targetMonitorIndex, int windowWidth = -1, int  windowHeight = -1);
 	void generateNeuronPositions();
 	void drawCircle(float cx, float cy, float r, int num_segments);
@@ -94,4 +129,8 @@ public:
 	void updateStats(std::vector<int> ls, std::tuple<int, float> ni, std::string at, bool cls);
 	void postSetupLogic();
 	void drawImGuiBriefNNStats(int winWidth, int winHeight);
+	void drawImageDrawer();
+	std::vector<float> convertColourToNNFormat();
+	void drawOutputs(std::vector<float> o, ImVec2 size);
+	void generateUserDrawnOutput(bool t, ImVec2 size);
 };

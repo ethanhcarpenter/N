@@ -34,6 +34,7 @@ public:
 	void drawSpecifiedInputForm();
 	void drawImages();
 	bool getIsDataCreated();
+	std::string getImageQuality();
 	GLuint loadTexture(std::string filename);
 	void TextCentered(std::string text);
 	void createSampleImageTextures();
