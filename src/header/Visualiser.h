@@ -59,7 +59,7 @@ public:
 	void updateStats(PixelCanvasStats& pcs);
 	void setup(int w, int h );
 	void resetCanvas();
-	ImU32 blendColor(ImU32 dst, ImU32 src);
+	ImU32 blendColour(ImU32 dst, ImU32 src);
 	void draw(const char* label, float canvasW, float canvasH);
 	const std::vector<ImU32>& getPixels() const;
 	int getWidth() const;

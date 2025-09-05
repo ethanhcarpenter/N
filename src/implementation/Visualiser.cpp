@@ -583,23 +583,24 @@ void PixelCanvas::setup(int w, int h) {
 	height = h;
 	pixels = std::vector<ImU32>(static_cast<size_t>(width * height), IM_COL32(0, 0, 0, 255));
 
-}//do this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-ImU32 PixelCanvas::blendColor(ImU32 dst, ImU32 src) {
-	float da = ((dst >> IM_COL32_A_SHIFT) & 0xFF) / 255.0f;
-	float dr = ((dst >> IM_COL32_R_SHIFT) & 0xFF) / 255.0f;
-	float dg = ((dst >> IM_COL32_G_SHIFT) & 0xFF) / 255.0f;
-	float db = ((dst >> IM_COL32_B_SHIFT) & 0xFF) / 255.0f;
+}
+ImU32 PixelCanvas::blendColour(ImU32 destinationColour, ImU32 sourceColour) {
+	
+	float destinationA = ((destinationColour >> IM_COL32_A_SHIFT) & 0xFF) / 255.0f;
+	float destinationR = ((destinationColour >> IM_COL32_R_SHIFT) & 0xFF) / 255.0f;
+	float destinationG = ((destinationColour >> IM_COL32_G_SHIFT) & 0xFF) / 255.0f;
+	float destinationB = ((destinationColour >> IM_COL32_B_SHIFT) & 0xFF) / 255.0f;
 
-	float sa = ((src >> IM_COL32_A_SHIFT) & 0xFF) / 255.0f;
-	float sr = ((src >> IM_COL32_R_SHIFT) & 0xFF) / 255.0f;
-	float sg = ((src >> IM_COL32_G_SHIFT) & 0xFF) / 255.0f;
-	float sb = ((src >> IM_COL32_B_SHIFT) & 0xFF) / 255.0f;
+	float sourceA = ((sourceColour >> IM_COL32_A_SHIFT) & 0xFF) / 255.0f;
+	float sourceR = ((sourceColour >> IM_COL32_R_SHIFT) & 0xFF) / 255.0f;
+	float sourceG = ((sourceColour >> IM_COL32_G_SHIFT) & 0xFF) / 255.0f;
+	float sourceB = ((sourceColour >> IM_COL32_B_SHIFT) & 0xFF) / 255.0f;
 
-	float outA = sa + da * (1.0f - sa);
+	float outA = sourceA + destinationA * (1.0f - sourceA);
 	if (outA <= 1e-6f) return 0;
-	float outR = (sr * sa + dr * da * (1.0f - sa)) / outA;
-	float outG = (sg * sa + dg * da * (1.0f - sa)) / outA;
-	float outB = (sb * sa + db * da * (1.0f - sa)) / outA;
+	float outR = (sourceR * sourceA + destinationR * destinationA * (1.0f - sourceA)) / outA;
+	float outG = (sourceG * sourceA + destinationG * destinationA * (1.0f - sourceA)) / outA;
+	float outB = (sourceB * sourceA + destinationB * destinationA * (1.0f - sourceA)) / outA;
 
 	return IM_COL32(int(outR * 255.0f), int(outG * 255.0f), int(outB * 255.0f), int(outA * 255.0f));
 }
@@ -610,18 +611,19 @@ void PixelCanvas::applyBrush(int cx, int cy, bool leftClick) {
 	ImU32 baseInk = IM_COL32(255, 255, 255, 20);
 	ImU32 baseEraser = IM_COL32(0, 0, 0, 255);
 
-	const int r = stats.radius;
-	const float rInv = 1.0f / std::max(1, r);
+	const int radius = stats.radius;
+	const float inverseRadius = 1.0f / std::max(1, radius);
 
-	for (int oy = -r; oy <= r; ++oy) {
-		for (int ox = -r; ox <= r; ++ox) {
-			int px = cx + ox, py = cy + oy;
-			if (px < 0 || py < 0 || px >= width || py >= height) continue;
+	for (int offsetY = -radius; offsetY <= radius; ++offsetY) {
+		for (int offsetX = -radius; offsetX <= radius; ++offsetX) {
+			int px = cx + offsetX;
+			int py = cy + offsetY;
+			if (px < 0 || py < 0 || px >= width || py >= height) { continue; }
 
-			float d = std::sqrt(float(ox * ox + oy * oy));
-			if (d > r + 0.5f) continue;
+			float distance = std::sqrt(float(offsetX * offsetX + offsetY * offsetY));
+			if (distance > radius + 0.5f) { continue; }
 
-			float t = 1.0f - (d * rInv);
+			float t = 1.0f - (distance * inverseRadius);
 			t = std::clamp(t, 0.0f, 1.0f);
 			float k = (stats.hardness <= 0.0f) ? t : std::pow(t, 1.0f / std::max(1e-3f, 1.0f - stats.hardness));
 
@@ -633,7 +635,7 @@ void PixelCanvas::applyBrush(int cx, int cy, bool leftClick) {
 			if (scaledA <= 0) continue;
 
 			ImU32 src = setAlpha(base, scaledA);
-			pixels[idx] = blendColor(pixels[idx], src);
+			pixels[idx] = blendColour(pixels[idx], src);
 		}
 	}
 }
